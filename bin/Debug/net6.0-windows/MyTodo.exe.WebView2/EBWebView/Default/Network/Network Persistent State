@@ -1,0 +1,1 @@
+{"net":{"http_server_properties":{"servers":[{"anonymization":[],"server":"https://tse4-mm.cn.bing.net","supports_spdy":true},{"anonymization":[],"server":"https://edge-conumer-static.azureedge.net","supports_spdy":true},{"anonymization":[],"server":"https://cdnjs.cloudflare.com","supports_spdy":true}],"version":5},"network_qualities":{"CAISABiAgICA+P////8B":"3G"}}}
