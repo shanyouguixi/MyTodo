@@ -33,7 +33,8 @@ namespace MyTodo.ViewModels
         public DelegateCommand<ComboBox> tagSelectCommand;
         public DelegateCommand<ListBox> memoSelectCommand;
         public DelegateCommand<string> searchWordChangedCommand;
-        public int selectTag = -1;
+        private DelegateCommand addMemoCommand;
+        public static int selectTag = -1;
         private string searchWord = "";
         private readonly IEventAggregator aggregator;
         private Workspace workspaceLocal;
@@ -79,24 +80,55 @@ namespace MyTodo.ViewModels
         }
 
         public Workspace WorkspaceLocal { get => workspaceLocal; set => workspaceLocal = value; }
+        public DelegateCommand AddMemoCommand { get => addMemoCommand; set => addMemoCommand = value; }
 
-        public MemosViewModel( IEventAggregator aggregator)
+        public MemosViewModel(IEventAggregator aggregator)
         {
             this.aggregator = aggregator;
             memoList = new ObservableCollection<Memo>();
             tagList = new ObservableCollection<Tag>();
             memoService = new MemoService();
             tagService = new TagService();
+            AddMemoCommand = new DelegateCommand(addNewMemo);
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
             MemoSelectCommand = new DelegateCommand<ListBox>(listBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
             WorkspaceLocal = MainWindowModel.SelectWorkspace;
             getMemoList(1, 10);
             getTagList(1, 10);
-            aggregator.ResgiterWorkspace(arg => {
+            aggregatorSet(this.aggregator);
+        }
+
+        private void aggregatorSet(IEventAggregator aggregator)
+        {
+            aggregator.ResgiterWorkspace(arg =>
+            {
                 WorkspaceLocal = arg.Value;
                 getMemoList(1, 10);
             });
+            aggregator.ResgiterFlash(name =>
+            {
+                if ("Memo".Equals(name))
+                {
+                    getMemoList(1, 10);
+                }
+            });
+
+        }
+
+        private async void addNewMemo()
+        {
+            JsonObject param = new JsonObject();
+            param.Add("workspaceId", WorkspaceLocal.id);
+            param.Add("tagId", SelectTag);
+            param.Add("title", "新备忘录");
+            param.Add("content", "山有鬼兮");
+            ApiResponse apiResponse = await memoService.SaveMemo(param);
+            if (apiResponse.code == 0)
+            {
+                getMemoList(1, 10);
+            }
+
         }
 
         private void WorkspaceChange(Workspace workspace)
@@ -157,7 +189,7 @@ namespace MyTodo.ViewModels
                     param.Add("searchWord", SearchWord);
                 }
                 var obj = await memoService.MemoList(param);
-                if(pageNum == 1)
+                if (pageNum == 1)
                 {
                     memoList.Clear();
                 }
@@ -165,7 +197,7 @@ namespace MyTodo.ViewModels
                 {
                     MemoList.Add(item);
                 }
-                if(MemoList.Count> 0)
+                if (MemoList.Count > 0)
                 {
                     aggregator.SetMemo(MemoList[0]);
                 }
@@ -195,7 +227,14 @@ namespace MyTodo.ViewModels
             }
         }
 
+        public void flashMemo()
+        {
+            getMemoList(1, 10);
+        }
+
     }
+
+    
 
 
 

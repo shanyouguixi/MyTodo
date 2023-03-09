@@ -28,6 +28,8 @@ namespace MyTodo.Views
     public partial class MemosView : UserControl
     {
         private readonly IEventAggregator aggregator;
+
+        Action<string> flasMemo;
         public MemosView(IEventAggregator aggregator)
         {
             this.aggregator = aggregator;
@@ -55,7 +57,7 @@ namespace MyTodo.Views
             {
 
                 //注册csobj脚本c#互操作
-                webView.CoreWebView2.AddHostObjectToScript("csobj", new ScriptCallbackObject());
+                webView.CoreWebView2.AddHostObjectToScript("csobj", new ScriptCallbackObject(this.aggregator));
                 //注册全局变量csobj
                 webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var csobj = window.chrome.webview.hostObjects.csobj;");
                 webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var csobj_sync= window.chrome.webview.hostObjects.sync.csobj;");

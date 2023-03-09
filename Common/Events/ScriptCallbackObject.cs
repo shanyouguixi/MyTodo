@@ -1,4 +1,5 @@
-﻿using MyTodo.Common.Model;
+﻿using MyTodo.Common.Extendsions;
+using MyTodo.Common.Model;
 using MyTodo.Common.service;
 using MyTodo.Common.service.request;
 using MyTodo.ViewModels;
@@ -22,10 +23,13 @@ namespace MyTodo.Common.Events
     [ComVisible(true)]
     public class ScriptCallbackObject
     {
+        private readonly IEventAggregator aggregator;
+
         private MemoService memoService;
 
-        public ScriptCallbackObject()
+        public ScriptCallbackObject(IEventAggregator aggregator)
         {
+            this.aggregator = aggregator;
             memoService = new MemoService();
         }
 
@@ -35,7 +39,7 @@ namespace MyTodo.Common.Events
             //string model = JsonConvert.SerializeObject(model);
             JsonObject memo = JsonObject.Parse(arg).AsObject();
             ApiResponse res;
-            if (model.id != null)
+            if (model.id ==null )
             {
                 res = await memoService.SaveMemo(memo);
 
@@ -47,6 +51,8 @@ namespace MyTodo.Common.Events
             if (res.code == 0)
             {
                 MessageBox.Show("保存成功");
+                MemosViewModel memoModel = new MemosViewModel(aggregator);
+                memoModel.flashMemo();
             }
             else
             {

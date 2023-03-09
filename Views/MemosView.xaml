@@ -82,7 +82,7 @@
             </StackPanel>
             <Button
                 Width="160"
-                Click="Button_Click"
+                Command="{Binding AddMemoCommand}"
                 Content="新增"
                 DockPanel.Dock="Top" />
 

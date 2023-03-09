@@ -8,7 +8,7 @@ namespace MyTodo.Common.Model
 {
     public class Memo
     {
-        public int id { get; set; }
+        public int? id { get; set; }
         public int? tagId { get; set; }
         public int workspaceId { get; set; }
         public string title { get; set; }

@@ -129,5 +129,21 @@ namespace MyTodo.Common.Extendsions
                     return true;
                 });
         }
+
+
+        public static void SetFlash(this IEventAggregator aggregator, string name)
+        {
+            aggregator.GetEvent<FlashEvent>().Publish(new FlashModel() { Name = name });
+        }
+
+        public static void ResgiterFlash(this IEventAggregator aggregator,
+           Action<FlashModel> action)
+        {
+            aggregator.GetEvent<FlashEvent>().Subscribe(action,
+                ThreadOption.PublisherThread, true, (m) =>
+                {
+                    return true;
+                });
+        }
     }
 }

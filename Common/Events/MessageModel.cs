@@ -30,4 +30,12 @@ namespace MyTodo.Common.Events
     public class MemoEvent : PubSubEvent<GlobalData<Memo>>
     {
     }
+
+    public class FlashModel
+    {
+        public string Name { get; set; }
+    }
+    public class FlashEvent : PubSubEvent<FlashModel>
+    {
+    }
 }
