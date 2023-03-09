@@ -2,6 +2,7 @@
 using MyTodo.Common.Model;
 using MyTodo.Common.service;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using System;
@@ -20,11 +21,14 @@ namespace MyTodo.ViewModels
     public class MainWindowModel:BindableBase, IConfigureService
     {
 
+        private readonly IEventAggregator aggregator;
         public ObservableCollection<Workspace> workSpaceList;
 
         private WorkSpaceService workSpaceService;
 
         private readonly IRegionManager regionManager;
+
+        private static Workspace selectWorkspace;
         public DelegateCommand<ComboBox> WorkspaceSelectCommand { get; set; }
 
         public ObservableCollection<Workspace> WorkSpaceList {
@@ -32,15 +36,19 @@ namespace MyTodo.ViewModels
             set { workSpaceList = value; RaisePropertyChanged(); }
         }
 
+        public static Workspace SelectWorkspace { get => selectWorkspace; set => selectWorkspace = value; }
 
-        public MainWindowModel(IRegionManager regionManager)
+        public MainWindowModel(IRegionManager regionManager, IEventAggregator aggregator)
         {
+            this.aggregator = aggregator;
             this.regionManager = regionManager;
             WorkSpaceList = new ObservableCollection<Workspace>();
             workSpaceService = new WorkSpaceService();
             WorkspaceSelectCommand = new DelegateCommand<ComboBox>(workspaceChage);
             GetWorkSpaceList(1, 10);
         }
+
+
 
         
 
@@ -51,8 +59,12 @@ namespace MyTodo.ViewModels
 
         public void workspaceChage(ComboBox comboBox)
         {
-
+            SelectWorkspace = (Workspace)comboBox.SelectedItem;
+            aggregator.SetWorkspace(SelectWorkspace);
         }
+
+       
+
 
         public async void GetWorkSpaceList(int pageNum, int pageSize)
         {

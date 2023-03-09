@@ -1,7 +1,10 @@
 ﻿using MyTodo.Common.Events;
+using MyTodo.Common.Extendsions;
 using MyTodo.Common.Model;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -24,11 +27,16 @@ namespace MyTodo.Views
     /// </summary>
     public partial class MemosView : UserControl
     {
-        public MemosView()
+        private readonly IEventAggregator aggregator;
+        public MemosView(IEventAggregator aggregator)
         {
+            this.aggregator = aggregator;
             InitializeComponent();
             InitializeAsync();
-
+            aggregator.ResgiterMemo(arg =>
+            {
+                loadMemo(arg.Value);
+            });
         }
 
         private async void InitializeAsync()
@@ -42,16 +50,16 @@ namespace MyTodo.Views
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
         {
-            
+
             if (webView != null && webView.CoreWebView2 != null)
             {
-                
+
                 //注册csobj脚本c#互操作
                 webView.CoreWebView2.AddHostObjectToScript("csobj", new ScriptCallbackObject());
                 //注册全局变量csobj
                 webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var csobj = window.chrome.webview.hostObjects.csobj;");
                 webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var csobj_sync= window.chrome.webview.hostObjects.sync.csobj;");
-                
+
             }
         }
 
@@ -67,10 +75,18 @@ namespace MyTodo.Views
 
         private void menuBar_Selected(object sender, SelectionChangedEventArgs e)
         {
-            Memo selectedItem = (Memo)menuBar.SelectedItem;
+            Memo selectedItem = (Memo)memoList.SelectedItem;
             if (selectedItem != null)
             {
-                webView.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(selectedItem));
+                loadMemo(selectedItem);
+            }
+        }
+
+        private void loadMemo(Memo memo)
+        {
+            if (webView.CoreWebView2 != null)
+            {
+                webView.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(memo));
             }
         }
     }

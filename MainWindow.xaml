@@ -50,7 +50,7 @@
                                           ItemsSource="{Binding WorkSpaceList}"
                                           Width="80"
                                           HorizontalAlignment="Center"
-                                          x:Name="tagCombo">
+                                          x:Name="tagCombo" SelectedIndex="0">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SelectionChanged">
                                             <i:InvokeCommandAction Command="{Binding WorkspaceSelectCommand}"

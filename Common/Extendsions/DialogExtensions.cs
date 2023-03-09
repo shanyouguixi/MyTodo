@@ -1,5 +1,6 @@
 ﻿using MyTodo.Common.DialogUtils;
 using MyTodo.Common.Events;
+using MyTodo.Common.Model;
 using Prism.Events;
 using Prism.Services.Dialogs;
 using System;
@@ -79,6 +80,54 @@ namespace MyTodo.Common.Extendsions
                 Filter = filterName,
                 Message = message,
             });
+        }
+        /// <summary>
+        /// 设置workspace
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="workspace"></param>
+        public static void SetWorkspace(this IEventAggregator aggregator, Workspace workspace)
+        {
+            aggregator.GetEvent<WorkspaceEvent>().Publish(new GlobalData<Workspace>() { Value = workspace});
+        }
+
+        /// <summary>
+        /// 获取workspace
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="action"></param>
+        public static void ResgiterWorkspace(this IEventAggregator aggregator,
+           Action<GlobalData<Workspace>> action)
+        {
+            aggregator.GetEvent<WorkspaceEvent>().Subscribe(action,
+                ThreadOption.PublisherThread, true, (m) =>
+                {
+                    return true;
+                });
+        }
+
+        /// <summary>
+        /// 设置memo
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="memo"></param>
+        public static void SetMemo(this IEventAggregator aggregator, Memo memo)
+        {
+            aggregator.GetEvent<MemoEvent>().Publish(new GlobalData<Memo>() { Value = memo });
+        }
+        /// <summary>
+        /// 获取memo
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="action"></param>
+        public static void ResgiterMemo(this IEventAggregator aggregator,
+           Action<GlobalData<Memo>> action)
+        {
+            aggregator.GetEvent<MemoEvent>().Subscribe(action,
+                ThreadOption.PublisherThread, true, (m) =>
+                {
+                    return true;
+                });
         }
     }
 }

@@ -1,13 +1,17 @@
 ﻿using Microsoft.Web.WebView2.WinForms;
+using MyTodo.Common.Extendsions;
 using MyTodo.Common.Model;
 using MyTodo.Common.service;
 using MyTodo.Common.service.request;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -31,6 +35,8 @@ namespace MyTodo.ViewModels
         public DelegateCommand<string> searchWordChangedCommand;
         public int selectTag = -1;
         private string searchWord = "";
+        private readonly IEventAggregator aggregator;
+        private Workspace workspaceLocal;
 
 
 
@@ -72,8 +78,11 @@ namespace MyTodo.ViewModels
             set { searchWordChangedCommand = value; RaisePropertyChanged(); }
         }
 
-        public MemosViewModel()
+        public Workspace WorkspaceLocal { get => workspaceLocal; set => workspaceLocal = value; }
+
+        public MemosViewModel( IEventAggregator aggregator)
         {
+            this.aggregator = aggregator;
             memoList = new ObservableCollection<Memo>();
             tagList = new ObservableCollection<Tag>();
             memoService = new MemoService();
@@ -81,8 +90,18 @@ namespace MyTodo.ViewModels
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
             MemoSelectCommand = new DelegateCommand<ListBox>(listBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
+            WorkspaceLocal = MainWindowModel.SelectWorkspace;
             getMemoList(1, 10);
             getTagList(1, 10);
+            aggregator.ResgiterWorkspace(arg => {
+                WorkspaceLocal = arg.Value;
+                getMemoList(1, 10);
+            });
+        }
+
+        private void WorkspaceChange(Workspace workspace)
+        {
+            getMemoList(1, 10);
         }
 
         private void listBoxChange(ListBox obj)
@@ -96,7 +115,6 @@ namespace MyTodo.ViewModels
             if (item == null)
             {
                 SelectTag = -1;
-                memoList.Clear();
                 getMemoList(1, 10);
             }
             else
@@ -127,6 +145,7 @@ namespace MyTodo.ViewModels
             try
             {
                 JsonObject param = new JsonObject();
+                param.Add("workspaceId", WorkspaceLocal.id);
                 param.Add("pageNum", pageNum);
                 param.Add("pageSize", pageSize);
                 if (SelectTag != -1)
@@ -145,6 +164,10 @@ namespace MyTodo.ViewModels
                 foreach (Memo item in obj.list)
                 {
                     MemoList.Add(item);
+                }
+                if(MemoList.Count> 0)
+                {
+                    aggregator.SetMemo(MemoList[0]);
                 }
             }
             finally
