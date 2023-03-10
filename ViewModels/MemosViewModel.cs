@@ -39,11 +39,18 @@ namespace MyTodo.ViewModels
         public DelegateCommand<ListBox> memoSelectCommand;
         public DelegateCommand<string> searchWordChangedCommand;
         private DelegateCommand addMemoCommand;
-        public DelegateCommand delMemoCommand;
+        private DelegateCommand resetTagCommand;
+        private DelegateCommand preMemoPage;
+        private DelegateCommand nextMemoPage;
+        public DelegateCommand<ListBoxItem> delMemoCommand;
         public static int selectTag = -1;
         private string searchWord = "";
         private readonly IEventAggregator aggregator;
         private Workspace workspaceLocal;
+        private int memoPageNum = 1;
+        private int memoPageSize = 10;
+        private int memosTotal = 0;
+        private int memoPages = 0;
 
 
 
@@ -87,7 +94,15 @@ namespace MyTodo.ViewModels
 
         public Workspace WorkspaceLocal { get => workspaceLocal; set => workspaceLocal = value; }
         public DelegateCommand AddMemoCommand { get => addMemoCommand; set => addMemoCommand = value; }
-        public DelegateCommand DelMemoCommand { get => delMemoCommand; set => delMemoCommand = value; }
+        public DelegateCommand<ListBoxItem> DelMemoCommand { get => delMemoCommand; set => delMemoCommand = value; }
+        public int MemoPageNum { get => memoPageNum; set { memoPageNum = value; RaisePropertyChanged(); } }
+        public int MemoPageSize { get => memoPageSize; set => memoPageSize = value; }
+        public int MemosTotal { get => memosTotal; set { memosTotal = value; RaisePropertyChanged(); } }
+        public DelegateCommand ResetTagCommand { get => resetTagCommand; set => resetTagCommand = value; }
+        public int MemoPages { get => memoPages; set { memoPages = value; RaisePropertyChanged(); } }
+
+        public DelegateCommand PreMemoPage { get => preMemoPage; set => preMemoPage = value; }
+        public DelegateCommand NextMemoPage { get => nextMemoPage; set => nextMemoPage = value; }
 
         public MemosViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider)
         {
@@ -98,35 +113,63 @@ namespace MyTodo.ViewModels
             memoService = new MemoService();
             tagService = new TagService();
             AddMemoCommand = new DelegateCommand(addNewMemo);
-            DelMemoCommand = new DelegateCommand(delMemo);
+            ResetTagCommand = new DelegateCommand(resetPage);
+            PreMemoPage = new DelegateCommand(getPreMemoPage);
+            NextMemoPage = new DelegateCommand(getNextMemoPage);
+            DelMemoCommand = new DelegateCommand<ListBoxItem>(delMemo);
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
             MemoSelectCommand = new DelegateCommand<ListBox>(listBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
             WorkspaceLocal = MainWindowModel.SelectWorkspace;
-            getMemoList(1, 10);
+            getMemoList();
             getTagList(1, 10);
             aggregatorSet(this.aggregator);
         }
 
-        private async void delMemo()
+
+
+        private void aggregatorSet(IEventAggregator aggregator)
+        {
+            aggregator.ResgiterWorkspace(arg =>
+            {
+                WorkspaceLocal = arg.Value;
+                resetPage();
+                getMemoList();
+            });
+            aggregator.ResgiterFlash(arg =>
+            {
+                if ("Memo".Equals(arg))
+                {
+                    resetPage();
+                    getMemoList();
+                }
+            });
+
+        }
+        /// <summary>
+        /// 删除备忘录
+        /// </summary>
+        /// <param name="boxItem"></param>
+        private async void delMemo(ListBoxItem boxItem)
         {
             try
             {
-                //var dialogResult = await dialogHost.Question("温馨提示", $"确认删除备忘录:{obj.title} ?");
-                //if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;
-                //UpdateLoading(true);
-                //JsonObject param = new JsonObject();
-                //param.Add("id", obj.id);
-                //ApiResponse apiResponse = await memoService.DelMemo(param);
-                //if (apiResponse.code == 1)
-                //{
-                //    aggregator.SendMessage("删除成功");
-                //}
-                //else
-                //{
-                //    aggregator.SendMessage("删除失败");
-                //}
-
+                Memo memo = boxItem.DataContext as Memo;
+                var dialogResult = await dialogHost.Question("温馨提示", $"确认删除:{memo.title} ?");
+                if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;
+                UpdateLoading(true);
+                JsonObject param = new JsonObject();
+                param.Add("id", memo.id);
+                ApiResponse apiResponse = await memoService.DelMemo(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage("删除成功");
+                    getMemoList();
+                }
+                else
+                {
+                    aggregator.SendMessage("删除失败");
+                }
             }
             catch (Exception e)
             {
@@ -138,23 +181,10 @@ namespace MyTodo.ViewModels
             }
         }
 
-        private void aggregatorSet(IEventAggregator aggregator)
-        {
-            aggregator.ResgiterWorkspace(arg =>
-            {
-                WorkspaceLocal = arg.Value;
-                getMemoList(1, 10);
-            });
-            aggregator.ResgiterFlash(arg =>
-            {
-                if ("Memo".Equals(arg))
-                {
-                    getMemoList(1, 10);
-                }
-            });
 
-        }
-
+        /// <summary>
+        /// 添加备忘录
+        /// </summary>
         private async void addNewMemo()
         {
             try
@@ -169,7 +199,8 @@ namespace MyTodo.ViewModels
                 if (apiResponse.code == 0)
                 {
                     aggregator.SendMessage(apiResponse.msg);
-                    getMemoList(1, 10);
+                    resetPage();
+                    getMemoList();
                 }
             }
             catch (Exception e)
@@ -179,38 +210,42 @@ namespace MyTodo.ViewModels
 
         }
 
-        private void WorkspaceChange(Workspace workspace)
-        {
-            getMemoList(1, 10);
-        }
-
         private void listBoxChange(ListBox obj)
         {
             tempMemo = (Memo)obj.SelectedItem;
         }
-
+        /// <summary>
+        /// 切换标签
+        /// </summary>
+        /// <param name="comboBox"></param>
         public void tagChage(ComboBox comboBox)
         {
+            resetPage();
             Tag item = (Tag)comboBox.SelectedItem;
             if (item == null)
             {
                 SelectTag = -1;
-                getMemoList(1, 10);
+                getMemoList();
             }
             else
             {
                 SelectTag = item.id;
-                getMemoList(1, 10);
+
+                getMemoList();
             }
         }
-
+        /// <summary>
+        /// 搜索框文字改变
+        /// </summary>
+        /// <param name="textBox"></param>
         public void SearchWordChanged(string textBox)
         {
             //if (string.IsNullOrEmpty(searchWord))
             //{
             //    return;
             //}
-            getMemoList(1, 10);
+            resetPage();
+            getMemoList();
         }
 
         /// <summary>
@@ -220,14 +255,14 @@ namespace MyTodo.ViewModels
         /// <param name="pageSize"></param>
         /// <param name="tagId"></param>
         /// <param name="searchWord"></param>
-        public async void getMemoList(int pageNum, int pageSize, string searchWord = null)
+        public async void getMemoList(string searchWord = null)
         {
             try
             {
                 JsonObject param = new JsonObject();
                 param.Add("workspaceId", WorkspaceLocal.id);
-                param.Add("pageNum", pageNum);
-                param.Add("pageSize", pageSize);
+                param.Add("pageNum", MemoPageNum);
+                param.Add("pageSize", MemoPageSize);
                 if (SelectTag != -1)
                 {
                     param.Add("tagId", SelectTag);
@@ -242,10 +277,9 @@ namespace MyTodo.ViewModels
                 {
                     aggregator.SendMessage(res.msg);
                 }
-                if (pageNum == 1)
-                {
-                    memoList.Clear();
-                }
+                memoList.Clear();
+                MemosTotal = obj.total;
+                MemoPages = obj.pages;
                 foreach (Memo item in obj.list)
                 {
                     MemoList.Add(item);
@@ -265,6 +299,28 @@ namespace MyTodo.ViewModels
             }
         }
 
+        private void getNextMemoPage()
+        {
+            if (MemoPageNum * MemoPageSize <= MemosTotal)
+            {
+                MemoPageNum++;
+                getMemoList();
+            }
+        }
+
+        private void getPreMemoPage()
+        {
+            if (MemoPageNum > 1)
+            {
+                MemoPageNum--;
+                getMemoList();
+            }
+        }
+        /// <summary>
+        /// 请求标签
+        /// </summary>
+        /// <param name="pageNum"></param>
+        /// <param name="pageSize"></param>
         public async void getTagList(int pageNum, int pageSize)
         {
             try
@@ -287,10 +343,18 @@ namespace MyTodo.ViewModels
 
             }
         }
+        /// <summary>
+        /// 充值页码
+        /// </summary>
+        private void resetPage()
+        {
+            MemoPageNum = 1;
+            MemoPageSize = 10;
+        }
 
         public void flashMemo()
         {
-            //getMemoList(1, 2);
+            getMemoList();
             MemoList.Clear();
         }
 

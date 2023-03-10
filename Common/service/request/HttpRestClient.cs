@@ -105,7 +105,7 @@ namespace MyTodo.Common.service.request
             request.Method = baseRequest.Method;
             if (baseRequest.Parameter != null)
             {
-                if (baseRequest.Method == Method.Get)
+                if (baseRequest.Method == Method.Get|| baseRequest.Method == Method.Delete)
                 {
                     string paramStr = ObjectToGetParam(baseRequest.Parameter);
                     apiUrl += paramStr;

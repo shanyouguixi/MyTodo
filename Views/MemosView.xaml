@@ -21,144 +21,263 @@
             MinWidth="200"
             Margin="2"
             Background="WhiteSmoke">
-            <TextBox
-                x:Name="DemoItemsSearchBox"
-                Width="180"
-                Padding="5"
-                materialDesign:HintAssist.Hint="Search"
-                materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                DockPanel.Dock="Top"
-                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                Text="{Binding SearchWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="TextChanged">
-                        <i:InvokeCommandAction Command="{Binding SearchWordChangedCommand}" CommandParameter="{Binding Text, ElementName=DemoItemsSearchBox}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </TextBox>
-            <StackPanel
-                Width="170"
-                Margin="5,10"
-                DockPanel.Dock="Top"
-                Orientation="Horizontal">
-                <TextBlock
-                    Width="60"
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="1.5*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="13*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox
+                    x:Name="DemoItemsSearchBox"
+                    Grid.Row="0"
+                    Width="180"
+                    Padding="5"
+                    materialDesign:HintAssist.Hint="Search"
+                    materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
+                    materialDesign:TextFieldAssist.HasClearButton="True"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding SearchWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="TextChanged">
+                            <i:InvokeCommandAction Command="{Binding SearchWordChangedCommand}" CommandParameter="{Binding Text, ElementName=DemoItemsSearchBox}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+                <StackPanel
+                    Grid.Row="1"
+                    Width="170"
+                    Margin="5,10"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Width="60"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="标签:" />
+                    <ComboBox
+                        x:Name="tagCombo"
+                        Width="80"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Center"
+                        ItemsSource="{Binding TagList}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding TagSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Foreground="{Binding color}" Kind="Tag" />
+                                    <TextBlock Margin="5,0" Text="{Binding name}" />
+                                </StackPanel>
+
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button
+                        Margin="10,0,0,0"
+                        Padding="0"
+                        Click="Button_Click"
+                        Command="{Binding ResetTagCommand}"
+                        Style="{StaticResource MaterialDesignFlatLightButton}">
+                        <materialDesign:PackIcon
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Foreground="Red"
+                            Kind="Close" />
+                    </Button>
+                </StackPanel>
+
+                <Button
+                    Grid.Row="2"
+                    Width="160"
+                    Command="{Binding AddMemoCommand}"
+                    Content="新增"
+                    DockPanel.Dock="Top" />
+
+
+                <materialDesign:TransitioningContent Grid.Row="3" OpeningEffect="{materialDesign:TransitionEffect Kind=ExpandIn}">
+
+                    <ListBox
+                        x:Name="memoList"
+                        Margin="0,16,0,16"
+                        ItemContainerStyle="{StaticResource MyListBoxItemStyle}"
+                        ItemsSource="{Binding MemoList}"
+                        SelectionChanged="menuBar_Selected"
+                        Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                        <ListBox.Resources>
+                            <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
+                        </ListBox.Resources>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding MemoSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="6*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel
+                                        Grid.Column="0"
+                                        Margin="10"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="10,0,30,0"
+                                            Padding="5"
+                                            Text="{Binding title}" />
+                                        <materialDesign:PackIcon
+                                            VerticalAlignment="Center"
+                                            Foreground="{Binding color}"
+                                            Kind="Tag" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <materialDesign:PopupBox StaysOpen="True">
+                                            <Grid Width="40">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Margin="8,0,0,0" Orientation="Horizontal">
+                                                    <materialDesign:PopupBox StaysOpen="True">
+                                                        <materialDesign:PopupBox.ToggleContent>
+                                                            <materialDesign:PackIcon
+                                                                Width="20"
+                                                                Height="20"
+                                                                Kind="NotebookEdit" />
+                                                        </materialDesign:PopupBox.ToggleContent>
+                                                        <StackPanel Width="200" Height="100">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                </Grid.RowDefinitions>
+                                                                <StackPanel
+                                                                    Grid.Row="0"
+                                                                    HorizontalAlignment="Left"
+                                                                    Orientation="Horizontal">
+                                                                    <TextBlock
+                                                                        Width="60"
+                                                                        Margin="5,0"
+                                                                        HorizontalAlignment="Left"
+                                                                        VerticalAlignment="Center"
+                                                                        Text="标签:" />
+                                                                    <ComboBox
+                                                                        x:Name="tagCombo"
+                                                                        Width="120"
+                                                                        Margin="5,0"
+                                                                        HorizontalAlignment="Left"
+                                                                        ItemsSource="{Binding TagList}">
+                                                                        <ComboBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <StackPanel Orientation="Horizontal">
+                                                                                    <materialDesign:PackIcon Foreground="{Binding color}" Kind="Tag" />
+                                                                                    <TextBlock Margin="2,0" Text="{Binding name}" />
+                                                                                </StackPanel>
+
+                                                                            </DataTemplate>
+                                                                        </ComboBox.ItemTemplate>
+                                                                    </ComboBox>
+                                                                </StackPanel>
+                                                                <TextBox
+                                                                    Grid.Row="1"
+                                                                    Width="190"
+                                                                    Margin="5"
+                                                                    HorizontalAlignment="Left"
+                                                                    materialDesign:HintAssist.Hint="标题" />
+                                                                <StackPanel
+                                                                    Grid.Row="2"
+                                                                    Margin="5"
+                                                                    HorizontalAlignment="Left"
+                                                                    Orientation="Horizontal">
+                                                                    <Button Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" Content="Save" />
+                                                                    <Button Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" Content="Cancel" />
+                                                                </StackPanel>
+
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </materialDesign:PopupBox>
+                                                </StackPanel>
+                                                <Button
+                                                    Grid.Row="1"
+                                                    Width="30"
+                                                    Height="30"
+                                                    Padding="0,0,0,15"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalContentAlignment="Center"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.DelMemoCommand}"
+                                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                                    FontWeight="Bold">
+                                                    <Button.Content>
+                                                        <materialDesign:PackIcon
+                                                            Width="25"
+                                                            Height="25"
+                                                            VerticalAlignment="Center"
+                                                            Kind="DeleteForever" />
+                                                    </Button.Content>
+                                                </Button>
+                                            </Grid>
+                                        </materialDesign:PopupBox>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </materialDesign:TransitioningContent>
+                <StackPanel
+                    Grid.Row="4"
+                    Width="auto"
+                    Height="40"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Text="标签:" />
-                <ComboBox
-                    x:Name="tagCombo"
-                    Width="80"
-                    Margin="5,0,0,0"
-                    HorizontalAlignment="Center"
-                    ItemsSource="{Binding TagList}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding TagSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Foreground="{Binding color}" Kind="Tag" />
-                                <TextBlock Margin="5,0" Text="{Binding name}" />
-                            </StackPanel>
-
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button
-                    Margin="10,0,0,0"
-                    Padding="0"
-                    Click="Button_Click"
-                    Style="{StaticResource MaterialDesignFlatLightButton}">
-                    <materialDesign:PackIcon
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Foreground="Red"
-                        Kind="Close" />
-                </Button>
-            </StackPanel>
-            <Button
-                Width="160"
-                Command="{Binding AddMemoCommand}"
-                Content="新增"
-                DockPanel.Dock="Top" />
-
-
-            <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect Kind=ExpandIn}">
-
-                <ListBox
-                    x:Name="memoList"
-                    Margin="0,16,0,16"
-                    ItemContainerStyle="{StaticResource MyListBoxItemStyle}"
-                    ItemsSource="{Binding MemoList}"
-                    SelectionChanged="menuBar_Selected"
-                    Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
-                    <ListBox.Resources>
-                        <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
-                    </ListBox.Resources>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding MemoSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="6*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel
-                                    Grid.Column="0"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Orientation="Horizontal">
-                                    <TextBlock
-                                        Margin="10,0,30,0"
-                                        Padding="5"
-                                        Text="{Binding title}" />
-                                    <materialDesign:PackIcon
-                                        VerticalAlignment="Center"
-                                        Foreground="{Binding color}"
-                                        Kind="Tag" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <materialDesign:PopupBox StaysOpen="True">
-                                        <Grid Width="40">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <Button
-                                                Grid.Row="0"
-                                                Width="30"
-                                                Height="30"
-                                                Padding="0,0,0,15"
-                                                HorizontalContentAlignment="Center"
-                                                VerticalContentAlignment="Center"
-                                                Command="{Binding DelMemoCommand}"
-                                                Content="{materialDesign:PackIcon Kind=NotebookEdit}" />
-                                            <Button
-                                                Grid.Row="1"
-                                                Width="30"
-                                                Height="30"
-                                                Padding="0,0,0,15"
-                                                HorizontalContentAlignment="Center"
-                                                VerticalContentAlignment="Center"
-                                                Command="{Binding DelMemoCommand}"
-                                                Content="{materialDesign:PackIcon Kind=DeleteForever}" />
-                                        </Grid>
-                                    </materialDesign:PopupBox>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </materialDesign:TransitioningContent>
+                    Cursor=""
+                    Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="33" />
+                            <ColumnDefinition Width="33" />
+                            <ColumnDefinition Width="33" />
+                            <ColumnDefinition Width="50" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Width="20"
+                            Padding="0"
+                            Command="{Binding PreMemoPage}"
+                            Content="&lt;"
+                            Cursor="Hand" />
+                        <TextBlock
+                            Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding MemoPageNum}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding MemoPages}" />
+                        <TextBlock
+                            Grid.Column="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding MemosTotal}" />
+                        <Button
+                            Grid.Column="4"
+                            Width="20"
+                            Padding="0"
+                            Command="{Binding NextMemoPage}"
+                            Content="&gt;" />
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </DockPanel>
 
         <wv2:WebView2 Name="webView" Grid.Column="1" />
