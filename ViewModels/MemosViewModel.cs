@@ -1,10 +1,13 @@
-﻿using Microsoft.Web.WebView2.WinForms;
+﻿using MaterialDesignThemes.Wpf;
+using Microsoft.Web.WebView2.WinForms;
+using MyTodo.Common.DialogUtils;
 using MyTodo.Common.Extendsions;
 using MyTodo.Common.Model;
 using MyTodo.Common.service;
 using MyTodo.Common.service.request;
 using Prism.Commands;
 using Prism.Events;
+using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Regions;
 using RestSharp;
@@ -22,8 +25,10 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace MyTodo.ViewModels
 {
-    public class MemosViewModel : BindableBase
+    public class MemosViewModel : NavigationViewModel
     {
+        private readonly IDialogHostService dialogHost;
+
         private MemoService memoService;
         private TagService tagService;
 
@@ -34,6 +39,7 @@ namespace MyTodo.ViewModels
         public DelegateCommand<ListBox> memoSelectCommand;
         public DelegateCommand<string> searchWordChangedCommand;
         private DelegateCommand addMemoCommand;
+        public DelegateCommand delMemoCommand;
         public static int selectTag = -1;
         private string searchWord = "";
         private readonly IEventAggregator aggregator;
@@ -49,7 +55,7 @@ namespace MyTodo.ViewModels
         public DelegateCommand<ListBox> MemoSelectCommand
         {
             get { return memoSelectCommand; }
-            set { memoSelectCommand = value; RaisePropertyChanged(); }
+            set { memoSelectCommand = value; RaisePropertyChanged("count"); }
         }
         public DelegateCommand<Memo> LoadContentCommand { get; set; }
         public ObservableCollection<Memo> MemoList
@@ -81,15 +87,18 @@ namespace MyTodo.ViewModels
 
         public Workspace WorkspaceLocal { get => workspaceLocal; set => workspaceLocal = value; }
         public DelegateCommand AddMemoCommand { get => addMemoCommand; set => addMemoCommand = value; }
+        public DelegateCommand DelMemoCommand { get => delMemoCommand; set => delMemoCommand = value; }
 
-        public MemosViewModel(IEventAggregator aggregator)
+        public MemosViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider)
         {
+            dialogHost = provider.Resolve<IDialogHostService>();
             this.aggregator = aggregator;
             memoList = new ObservableCollection<Memo>();
             tagList = new ObservableCollection<Tag>();
             memoService = new MemoService();
             tagService = new TagService();
             AddMemoCommand = new DelegateCommand(addNewMemo);
+            DelMemoCommand = new DelegateCommand(delMemo);
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
             MemoSelectCommand = new DelegateCommand<ListBox>(listBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
@@ -99,6 +108,36 @@ namespace MyTodo.ViewModels
             aggregatorSet(this.aggregator);
         }
 
+        private async void delMemo()
+        {
+            try
+            {
+                //var dialogResult = await dialogHost.Question("温馨提示", $"确认删除备忘录:{obj.title} ?");
+                //if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;
+                //UpdateLoading(true);
+                //JsonObject param = new JsonObject();
+                //param.Add("id", obj.id);
+                //ApiResponse apiResponse = await memoService.DelMemo(param);
+                //if (apiResponse.code == 1)
+                //{
+                //    aggregator.SendMessage("删除成功");
+                //}
+                //else
+                //{
+                //    aggregator.SendMessage("删除失败");
+                //}
+
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("删除失败");
+            }
+            finally
+            {
+                UpdateLoading(false);
+            }
+        }
+
         private void aggregatorSet(IEventAggregator aggregator)
         {
             aggregator.ResgiterWorkspace(arg =>
@@ -106,9 +145,9 @@ namespace MyTodo.ViewModels
                 WorkspaceLocal = arg.Value;
                 getMemoList(1, 10);
             });
-            aggregator.ResgiterFlash(name =>
+            aggregator.ResgiterFlash(arg =>
             {
-                if ("Memo".Equals(name))
+                if ("Memo".Equals(arg))
                 {
                     getMemoList(1, 10);
                 }
@@ -118,15 +157,24 @@ namespace MyTodo.ViewModels
 
         private async void addNewMemo()
         {
-            JsonObject param = new JsonObject();
-            param.Add("workspaceId", WorkspaceLocal.id);
-            param.Add("tagId", SelectTag);
-            param.Add("title", "新备忘录");
-            param.Add("content", "山有鬼兮");
-            ApiResponse apiResponse = await memoService.SaveMemo(param);
-            if (apiResponse.code == 0)
+            try
             {
-                getMemoList(1, 10);
+
+                JsonObject param = new JsonObject();
+                param.Add("workspaceId", WorkspaceLocal.id);
+                param.Add("tagId", SelectTag);
+                param.Add("title", "新备忘录");
+                param.Add("content", "山有鬼兮");
+                ApiResponse apiResponse = await memoService.SaveMemo(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage(apiResponse.msg);
+                    getMemoList(1, 10);
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
             }
 
         }
@@ -188,7 +236,12 @@ namespace MyTodo.ViewModels
                 {
                     param.Add("searchWord", SearchWord);
                 }
-                var obj = await memoService.MemoList(param);
+                var res = await memoService.MemoList(param);
+                var obj = res.data;
+                if (res.code != 0)
+                {
+                    aggregator.SendMessage(res.msg);
+                }
                 if (pageNum == 1)
                 {
                     memoList.Clear();
@@ -201,6 +254,10 @@ namespace MyTodo.ViewModels
                 {
                     aggregator.SetMemo(MemoList[0]);
                 }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
             }
             finally
             {
@@ -221,6 +278,10 @@ namespace MyTodo.ViewModels
                     TagList.Add(item);
                 }
             }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
+            }
             finally
             {
 
@@ -229,12 +290,13 @@ namespace MyTodo.ViewModels
 
         public void flashMemo()
         {
-            getMemoList(1, 10);
+            //getMemoList(1, 2);
+            MemoList.Clear();
         }
 
     }
 
-    
+
 
 
 

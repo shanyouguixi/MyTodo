@@ -19,12 +19,12 @@ namespace MyTodo.Common.service
 
         }
 
-        public async Task<ResponseData<Workspace>> GetWorkSpaceList(JsonObject param)
+        public async Task<ApiResponse<ResponseData<Workspace>>> GetWorkSpaceList(JsonObject param)
         {
             httpRestClient = new HttpRestClient("/api/workspace/getWorkspaceList");
             ApiResponse<ResponseData<Workspace>> response = await httpRestClient.ExcuteAsync<ResponseData<Workspace>>(new BaseRequest() { Method = Method.Get, Parameter = param });
             var obj = response.data;
-            return response.data;
+            return response;
         }
     }
 }

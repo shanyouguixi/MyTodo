@@ -1,6 +1,7 @@
 ﻿using MyTodo.Common.Extendsions;
 using MyTodo.Common.Model;
 using MyTodo.Common.service;
+using MyTodo.Common.service.request;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -18,7 +19,7 @@ using System.Windows.Controls;
 
 namespace MyTodo.ViewModels
 {
-    public class MainWindowModel:BindableBase, IConfigureService
+    public class MainWindowModel : BindableBase, IConfigureService
     {
 
         private readonly IEventAggregator aggregator;
@@ -31,7 +32,8 @@ namespace MyTodo.ViewModels
         private static Workspace selectWorkspace;
         public DelegateCommand<ComboBox> WorkspaceSelectCommand { get; set; }
 
-        public ObservableCollection<Workspace> WorkSpaceList {
+        public ObservableCollection<Workspace> WorkSpaceList
+        {
             get { return workSpaceList; }
             set { workSpaceList = value; RaisePropertyChanged(); }
         }
@@ -50,7 +52,7 @@ namespace MyTodo.ViewModels
 
 
 
-        
+
 
         public void Configure()
         {
@@ -63,7 +65,7 @@ namespace MyTodo.ViewModels
             aggregator.SetWorkspace(SelectWorkspace);
         }
 
-       
+
 
 
         public async void GetWorkSpaceList(int pageNum, int pageSize)
@@ -73,11 +75,21 @@ namespace MyTodo.ViewModels
                 JsonObject param = new JsonObject();
                 param.Add("pageNum", pageNum);
                 param.Add("pageSize", pageSize);
-                var obj = await workSpaceService.GetWorkSpaceList(param);
+                var res = await workSpaceService.GetWorkSpaceList(param);
+                if (res.code != 0)
+                {
+                    aggregator.SendMessage("网络错误");
+                    return;
+                }
+                var obj = res.data;
                 foreach (Workspace item in obj.list)
                 {
                     WorkSpaceList.Add(item);
                 }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
             }
             finally
             {

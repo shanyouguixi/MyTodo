@@ -28,12 +28,12 @@ namespace MyTodo.Common.service
         /// </summary>
         /// <param name="">int pageSize, int pageNum, int? tagId,string? searchWord</param>
         /// <returns></returns>
-        public async Task<ResponseData<Memo>> MemoList(JsonObject param)
+        public async Task<ApiResponse<ResponseData<Memo>>> MemoList(JsonObject param)
         {
             httpRestClient = new HttpRestClient("/api/memo/getMemoList");
             ApiResponse<ResponseData<Memo>> response = await httpRestClient.ExcuteAsync<ResponseData<Memo>>(new BaseRequest() { Method = Method.Get, Parameter = param });
             var obj = response.data;
-            return response.data;
+            return response;
         }
 
         public async Task<ApiResponse> SaveMemo(JsonObject param)
@@ -47,6 +47,12 @@ namespace MyTodo.Common.service
         {
             httpRestClient = new HttpRestClient("/api/memo/updateMemo");
             return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Post, Parameter = param });
+        }
+
+        public async Task<ApiResponse> DelMemo(JsonObject param)
+        {
+            httpRestClient = new HttpRestClient("/api/memo/delMemo");
+            return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Delete, Parameter = param });
         }
     }
 }

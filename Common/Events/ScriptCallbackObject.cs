@@ -35,28 +35,34 @@ namespace MyTodo.Common.Events
 
         public async void SaveMemo(string arg)
         {
-            Memo model = JsonConvert.DeserializeObject<Memo>(arg);
-            //string model = JsonConvert.SerializeObject(model);
-            JsonObject memo = JsonObject.Parse(arg).AsObject();
-            ApiResponse res;
-            if (model.id ==null )
+            try
             {
-                res = await memoService.SaveMemo(memo);
+                Memo model = JsonConvert.DeserializeObject<Memo>(arg);
+                //string model = JsonConvert.SerializeObject(model);
+                JsonObject memo = JsonObject.Parse(arg).AsObject();
+                ApiResponse res;
+                if (model.id == null)
+                {
+                    res = await memoService.SaveMemo(memo);
 
+                }
+                else
+                {
+                    res = await memoService.UpdateMemo(memo);
+                }
+                if (res.code == 0)
+                {
+                    aggregator.SendMessage("保存成功", "Main");
+                    aggregator.SetFlash("Memo");
+                }
+                else
+                {
+                    aggregator.SendMessage("保存失败", "Main");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                res = await memoService.UpdateMemo(memo);
-            }
-            if (res.code == 0)
-            {
-                MessageBox.Show("保存成功");
-                MemosViewModel memoModel = new MemosViewModel(aggregator);
-                memoModel.flashMemo();
-            }
-            else
-            {
-                MessageBox.Show("保存失败");
+                aggregator.SendMessage("网络错误", "Main");
             }
         }
     }

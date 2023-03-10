@@ -1,30 +1,33 @@
-﻿<Window x:Class="MyTodo.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:prism="http://prismlibrary.com/"
-        xmlns:local="clr-namespace:MyTodo.Views"
-        xmlns:ext="clr-namespace:MyTodo.Common.Extendsions"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        mc:Ignorable="d"
-        Title="MainWindow"
-        WindowStyle="None"
-        Height="800"
-        Width="1280">
-    
-    <materialDesign:DialogHost DialogTheme="Inherit"
-                               x:Name="DialogHost"
-                               Identifier="Root"
-                               SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
-        <DockPanel LastChildFill="True">
-            <materialDesign:ColorZone x:Name="ColorZone"
-                                      Padding="16"
-                                      DockPanel.Dock="Top"
-                                      Mode="PrimaryMid" Background="White">
+﻿<Window
+    x:Class="MyTodo.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ext="clr-namespace:MyTodo.Common.Extendsions"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MyTodo.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    Title="MainWindow"
+    Width="1280"
+    Height="800"
+    WindowStyle="None"
+    mc:Ignorable="d">
 
-                <DockPanel >
+    <materialDesign:DialogHost
+        x:Name="dialogHost"
+        DialogTheme="Inherit"
+        Identifier="Root">
+        <DockPanel LastChildFill="True">
+            <materialDesign:ColorZone
+                x:Name="ColorZone"
+                Padding="16"
+                Background="White"
+                DockPanel.Dock="Top"
+                Mode="PrimaryMid">
+
+                <DockPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -32,37 +35,43 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <DockPanel Grid.Column="0">
-                            <Button x:Name="topMenu"
-                                    HorizontalAlignment="Left"
-                                    Content="{materialDesign:PackIcon Kind=Menu, Size=30}"
-                                    Style="{StaticResource MaterialDesignFlatLightButton}"
-                                    ToolTip="菜单"
-                                    Click="topMenu_Click" />
-                            <StackPanel Margin="5,10"
-                                        Width="170"
-                                        DockPanel.Dock="Top"
-                                        Orientation="Horizontal">
-                                <TextBlock Text="工作空间:"
-                                           Foreground="Black"
-                                           VerticalAlignment="Center"
-                                           Width="60" />
-                                <ComboBox Margin="5,0,0,0"
-                                          ItemsSource="{Binding WorkSpaceList}"
-                                          Width="80"
-                                          HorizontalAlignment="Center"
-                                          x:Name="tagCombo" SelectedIndex="0">
+                            <Button
+                                x:Name="topMenu"
+                                HorizontalAlignment="Left"
+                                Click="topMenu_Click"
+                                Content="{materialDesign:PackIcon Kind=Menu,
+                                                                  Size=30}"
+                                Style="{StaticResource MaterialDesignFlatLightButton}"
+                                ToolTip="菜单" />
+                            <StackPanel
+                                Width="170"
+                                Margin="5,10"
+                                DockPanel.Dock="Top"
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Width="60"
+                                    VerticalAlignment="Center"
+                                    Foreground="Black"
+                                    Text="工作空间:" />
+                                <ComboBox
+                                    x:Name="tagCombo"
+                                    Width="80"
+                                    Margin="5,0,0,0"
+                                    HorizontalAlignment="Center"
+                                    ItemsSource="{Binding WorkSpaceList}"
+                                    SelectedIndex="0">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SelectionChanged">
-                                            <i:InvokeCommandAction Command="{Binding WorkspaceSelectCommand}"
-                                                                   CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}" />
+                                            <i:InvokeCommandAction Command="{Binding WorkspaceSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding spaceName}"
-                                                           Foreground="Black"
-                                                           Margin="5,0" />
+                                                <TextBlock
+                                                    Margin="5,0"
+                                                    Foreground="Black"
+                                                    Text="{Binding spaceName}" />
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -72,12 +81,13 @@
 
                         </DockPanel>
                         <DockPanel Grid.Column="1">
-                            <TextBlock Margin="-152,0,0,0"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       AutomationProperties.Name="Material Design In XAML Toolkit"
-                                       FontSize="22"
-                                       Text="TODO" />
+                            <TextBlock
+                                Margin="-152,0,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Material Design In XAML Toolkit"
+                                FontSize="22"
+                                Text="TODO" />
                         </DockPanel>
                         <DockPanel Grid.Column="2">
                             <Grid>
@@ -85,33 +95,40 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <StackPanel Grid.Column="1"
-                                            HorizontalAlignment="Right"
-                                            Orientation="Horizontal">
-                                    <Image Source="/images/head.jpg"
-                                           Margin="0,0,30,0"
-                                           Width="25"
-                                           Height="25">
+                                <StackPanel
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+
+                                    <Image
+                                        Width="25"
+                                        Height="25"
+                                        Margin="0,0,30,0"
+                                        Source="/images/head.jpg">
                                         <Image.Clip>
-                                            <EllipseGeometry Center="12.5,12.5"
-                                                             RadiusX="12.5"
-                                                             RadiusY="12.5" />
+                                            <EllipseGeometry
+                                                Center="12.5,12.5"
+                                                RadiusX="12.5"
+                                                RadiusY="12.5" />
                                         </Image.Clip>
                                     </Image>
-                                    <Button x:Name="btnMin"
-                                            Content="{materialDesign:PackIcon Kind=WindowMinimize}"
-                                            Style="{StaticResource MaterialDesignFlatLightButton}"
-                                            ToolTip="最小化"
-                                            Click="btnMin_Click" />
-                                    <Button x:Name="btnMax"
-                                            Content="{materialDesign:PackIcon Kind=WindowMaximize}"
-                                            Style="{StaticResource MaterialDesignFlatLightButton}"
-                                            ToolTip="最大化"
-                                            Click="btnMax_Click" />
-                                    <Button x:Name="btnClose"
-                                            Content="{materialDesign:PackIcon Kind=WindowClose}"
-                                            Style="{StaticResource MaterialDesignFlatLightButton}"
-                                            ToolTip="关闭" />
+                                    <Button
+                                        x:Name="btnMin"
+                                        Click="btnMin_Click"
+                                        Content="{materialDesign:PackIcon Kind=WindowMinimize}"
+                                        Style="{StaticResource MaterialDesignFlatLightButton}"
+                                        ToolTip="最小化" />
+                                    <Button
+                                        x:Name="btnMax"
+                                        Click="btnMax_Click"
+                                        Content="{materialDesign:PackIcon Kind=WindowMaximize}"
+                                        Style="{StaticResource MaterialDesignFlatLightButton}"
+                                        ToolTip="最大化" />
+                                    <Button
+                                        x:Name="btnClose"
+                                        Content="{materialDesign:PackIcon Kind=WindowClose}"
+                                        Style="{StaticResource MaterialDesignFlatLightButton}"
+                                        ToolTip="关闭" />
                                 </StackPanel>
                             </Grid>
 
@@ -119,25 +136,33 @@
                     </Grid>
                 </DockPanel>
             </materialDesign:ColorZone>
-            <DockPanel DockPanel.Dock="Left"
-                       Width="150"
-                       x:Name="LeftMenu">
+
+            <DockPanel
+                x:Name="LeftMenu"
+                Width="150"
+                DockPanel.Dock="Left">
                 <local:MenuView />
             </DockPanel>
-            <DockPanel DockPanel.Dock="Right"
-                       Width="0"
-                       x:Name="RightMsg"
-                       Background="Gray">
+            <DockPanel
+                x:Name="RightMsg"
+                Width="0"
+                Background="Gray"
+                DockPanel.Dock="Right">
                 <TextBlock Text="Title" />
             </DockPanel>
-            <DockPanel DockPanel.Dock="Bottom"
-                       Height="50"
-                       x:Name="BottomFoot">
-                <TextBlock Text="bottom" />
+            <DockPanel
+                x:Name="BottomFoot"
+                Height="50"
+                DockPanel.Dock="Bottom">
+                <materialDesign:Snackbar
+                    x:Name="Snackbar"
+                    Panel.ZIndex="1"
+                    MessageQueue="{materialDesign:MessageQueue}" />
             </DockPanel>
-            <DockPanel Height="auto"
-                       Width="auto"
-                       x:Name="Content">
+            <DockPanel
+                x:Name="Content"
+                Width="auto"
+                Height="auto">
                 <ContentControl prism:RegionManager.RegionName="{x:Static ext:PrismManager.MainViewRegionName}" />
             </DockPanel>
 

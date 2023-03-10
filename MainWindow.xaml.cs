@@ -60,6 +60,13 @@ namespace MyTodo
             LeftMenuTimer = new DispatcherTimer();
             leftMenuTimer.Interval = TimeSpan.FromMilliseconds(1);
             leftMenuTimer.Tick += timer_Tick;
+            aggregator.ResgiterMessage(arg =>
+            {
+                if("Main".Equals(arg.Filter))
+                {
+                    Snackbar.MessageQueue.Enqueue(arg.Message);
+                }
+            });
 
             btnClose.Click += async (s, e) =>
             {

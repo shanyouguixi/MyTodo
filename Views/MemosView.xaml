@@ -94,8 +94,6 @@
                     Margin="0,16,0,16"
                     ItemContainerStyle="{StaticResource MyListBoxItemStyle}"
                     ItemsSource="{Binding MemoList}"
-                    SelectedIndex="{Binding SelectedIndex}"
-                    SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                     SelectionChanged="menuBar_Selected"
                     Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
                     <ListBox.Resources>
@@ -129,22 +127,30 @@
                                         Kind="Tag" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <materialDesign:PopupBox IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" StaysOpen="True">
+                                    <materialDesign:PopupBox StaysOpen="True">
                                         <Grid Width="40">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
-                                            <materialDesign:PackIcon
+                                            <Button
                                                 Grid.Row="0"
                                                 Width="30"
-                                                Margin="5"
-                                                Kind="NotebookEdit" />
-                                            <materialDesign:PackIcon
+                                                Height="30"
+                                                Padding="0,0,0,15"
+                                                HorizontalContentAlignment="Center"
+                                                VerticalContentAlignment="Center"
+                                                Command="{Binding DelMemoCommand}"
+                                                Content="{materialDesign:PackIcon Kind=NotebookEdit}" />
+                                            <Button
                                                 Grid.Row="1"
                                                 Width="30"
-                                                Margin="5"
-                                                Kind="DeleteForever" />
+                                                Height="30"
+                                                Padding="0,0,0,15"
+                                                HorizontalContentAlignment="Center"
+                                                VerticalContentAlignment="Center"
+                                                Command="{Binding DelMemoCommand}"
+                                                Content="{materialDesign:PackIcon Kind=DeleteForever}" />
                                         </Grid>
                                     </materialDesign:PopupBox>
                                 </StackPanel>
