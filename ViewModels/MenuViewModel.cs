@@ -48,7 +48,7 @@ namespace MyMemo.ViewModels
         void CreateMenuBar()
         {
             MenuBars.Add(new MenuBar() { Icon = "Home", Title = "首页", NameSpace = "IndexView" });
-            MenuBars.Add(new MenuBar() { Icon = "AlarmMultiple", Title = "便签", NameSpace = "MemoView" });
+            MenuBars.Add(new MenuBar() { Icon = "AlarmMultiple", Title = "便签", NameSpace = "TodoView" });
             MenuBars.Add(new MenuBar() { Icon = "NotebookPlus", Title = "备忘录", NameSpace = "MemosView" });
             //MenuBars.Add(new MenuBar() { Icon = "Tag", Title = "标签", NameSpace = "TagsView" });
             MenuBars.Add(new MenuBar() { Icon = "Cog", Title = "设置", NameSpace = "SettingView" });

@@ -2,6 +2,8 @@
 using MyMemo.ViewModels;
 using MyMemo.Views;
 using MyMemo.Views.Dialog;
+using MyTodo.ViewModels;
+using MyTodo.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
 using System;
@@ -29,6 +31,7 @@ namespace MyMemo
             containerRegistry.RegisterForNavigation<IndexView>();
             containerRegistry.RegisterForNavigation<MemosView, MemosViewModel>();
   
+            containerRegistry.RegisterForNavigation<TodoView,TodoViewModel>();
             containerRegistry.RegisterForNavigation<SettingView,SettingViewModel>();
             containerRegistry.RegisterForNavigation<MainWindow, MainWindowModel>();
             containerRegistry.RegisterForNavigation<MsgView, MsgViewModel>();

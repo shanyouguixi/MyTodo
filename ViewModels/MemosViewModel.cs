@@ -31,6 +31,7 @@ namespace MyMemo.ViewModels
     public class MemosViewModel : NavigationViewModel
     {
         private readonly IDialogHostService dialogHost;
+        private readonly IEventAggregator aggregator;
 
         private MemoService memoService;
         private TagService tagService;
@@ -51,7 +52,6 @@ namespace MyMemo.ViewModels
         public DelegateCommand<ListBoxItem> delMemoCommand;
         public static int selectTag = -1;
         private string searchWord = "";
-        private readonly IEventAggregator aggregator;
         private Workspace workspaceLocal;
         public static int memoPageNum = 1;
         public static int memoPageSize = 10;
@@ -104,8 +104,8 @@ namespace MyMemo.ViewModels
         public int MemoPageNum { get => memoPageNum; set { memoPageNum = value; RaisePropertyChanged(); } }
         public int MemoPageSize { get => memoPageSize; set => memoPageSize = value; }
         public int MemosTotal { get => memosTotal; set { memosTotal = value; RaisePropertyChanged(); } }
-        public DelegateCommand ResetTagCommand { get => resetTagCommand; set => resetTagCommand = value; }
         public int MemoPages { get => memoPages; set { memoPages = value; RaisePropertyChanged(); } }
+        public DelegateCommand ResetTagCommand { get => resetTagCommand; set => resetTagCommand = value; }
 
         public DelegateCommand PreMemoPage { get => preMemoPage; set => preMemoPage = value; }
         public DelegateCommand NextMemoPage { get => nextMemoPage; set => nextMemoPage = value; }
@@ -239,9 +239,13 @@ namespace MyMemo.ViewModels
         {
             try
             {
+                if (TempMemo == null)
+                {
+                    return;
+                }
 
                 JsonObject param = new JsonObject();
-                param.Add("tagId", TempMemo.tagId);
+                param.Add("tagId", TagList[TempMemo.tagIndex].id);
                 param.Add("title", TempMemo.title);
                 param.Add("id", TempMemo.id);
                 ApiResponse apiResponse = await memoService.UpdateMemo(param);
