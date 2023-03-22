@@ -1,4 +1,4 @@
-﻿using MyTodo.Common.Model;
+﻿using MyMemo.Common.Model;
 using Prism.Events;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace MyTodo.Common.Events
+namespace MyMemo.Common.Events
 {
     public class MessageModel
     {

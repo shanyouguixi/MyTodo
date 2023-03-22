@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.Extendsions
+namespace MyMemo.Common.Extendsions
 {
     public static class PrismManager
     {

@@ -1,5 +1,5 @@
-﻿using MyTodo.Common.Model;
-using MyTodo.Common.service.request;
+﻿using MyMemo.Common.Model;
+using MyMemo.Common.service.request;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -12,7 +12,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 
-namespace MyTodo.Common.service
+namespace MyMemo.Common.service
 {
     public class MemoService
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.DialogUtils
+namespace MyMemo.Common.DialogUtils
 {
     public interface IDialogHostAware
     {

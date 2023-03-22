@@ -1,7 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
-using MyTodo.Common.DialogUtils;
-using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
+using MyMemo.Common.DialogUtils;
+using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
 using Prism.Events;
 using Prism.Regions;
 using System;
@@ -20,7 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace MyTodo
+namespace MyMemo
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -65,6 +65,14 @@ namespace MyTodo
                 if("Main".Equals(arg.Filter))
                 {
                     Snackbar.MessageQueue.Enqueue(arg.Message);
+                }
+                
+            });
+            aggregator.ResgiterFlash(arg =>
+            {
+                if ("GlogalWorkspace".Equals(arg.Name))
+                {
+                    tagCombo.SelectedIndex = 0;
                 }
             });
 

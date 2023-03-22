@@ -1,5 +1,5 @@
-﻿using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
+﻿using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.ViewModels
+namespace MyMemo.ViewModels
 {
     public class MenuViewModel : BindableBase
     {
@@ -48,9 +48,9 @@ namespace MyTodo.ViewModels
         void CreateMenuBar()
         {
             MenuBars.Add(new MenuBar() { Icon = "Home", Title = "首页", NameSpace = "IndexView" });
-            MenuBars.Add(new MenuBar() { Icon = "AlarmMultiple", Title = "便签", NameSpace = "NotesView" });
+            MenuBars.Add(new MenuBar() { Icon = "AlarmMultiple", Title = "便签", NameSpace = "MemoView" });
             MenuBars.Add(new MenuBar() { Icon = "NotebookPlus", Title = "备忘录", NameSpace = "MemosView" });
-            MenuBars.Add(new MenuBar() { Icon = "Tag", Title = "标签", NameSpace = "TagsView" });
+            //MenuBars.Add(new MenuBar() { Icon = "Tag", Title = "标签", NameSpace = "TagsView" });
             MenuBars.Add(new MenuBar() { Icon = "Cog", Title = "设置", NameSpace = "SettingView" });
         }
     }

@@ -1,10 +1,12 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Microsoft.Web.WebView2.WinForms;
-using MyTodo.Common.DialogUtils;
-using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
-using MyTodo.Common.service;
-using MyTodo.Common.service.request;
+using MyMemo.Common.service;
+using MyMemo.Common.DialogUtils;
+using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
+using MyMemo.Common.service;
+using MyMemo.Common.service.request;
+using MyMemo.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Ioc;
@@ -19,11 +21,12 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace MyTodo.ViewModels
+namespace MyMemo.ViewModels
 {
     public class MemosViewModel : NavigationViewModel
     {
@@ -32,14 +35,17 @@ namespace MyTodo.ViewModels
         private MemoService memoService;
         private TagService tagService;
 
-        public Memo tempMemo { get; set; }
+        private Memo tempMemo;
         public ObservableCollection<Memo> memoList;
         public ObservableCollection<Tag> tagList;
         public DelegateCommand<ComboBox> tagSelectCommand;
-        public DelegateCommand<ListBox> memoSelectCommand;
+        public DelegateCommand<ListBoxItem> memoSelectCommand;
+        private DelegateCommand<ListBox> memoSelectChangeCommand;
         public DelegateCommand<string> searchWordChangedCommand;
+        private DelegateCommand<Object> updateMemoTitleAndTag;
         private DelegateCommand addMemoCommand;
         private DelegateCommand resetTagCommand;
+        private DelegateCommand updateMemo;
         private DelegateCommand preMemoPage;
         private DelegateCommand nextMemoPage;
         public DelegateCommand<ListBoxItem> delMemoCommand;
@@ -47,10 +53,10 @@ namespace MyTodo.ViewModels
         private string searchWord = "";
         private readonly IEventAggregator aggregator;
         private Workspace workspaceLocal;
-        private int memoPageNum = 1;
-        private int memoPageSize = 10;
-        private int memosTotal = 0;
-        private int memoPages = 0;
+        public static int memoPageNum = 1;
+        public static int memoPageSize = 10;
+        public static int memosTotal = 0;
+        public static int memoPages = 0;
 
 
 
@@ -59,7 +65,7 @@ namespace MyTodo.ViewModels
             get { return tagSelectCommand; }
             set { tagSelectCommand = value; RaisePropertyChanged(); }
         }
-        public DelegateCommand<ListBox> MemoSelectCommand
+        public DelegateCommand<ListBoxItem> MemoSelectCommand
         {
             get { return memoSelectCommand; }
             set { memoSelectCommand = value; RaisePropertyChanged("count"); }
@@ -103,6 +109,11 @@ namespace MyTodo.ViewModels
 
         public DelegateCommand PreMemoPage { get => preMemoPage; set => preMemoPage = value; }
         public DelegateCommand NextMemoPage { get => nextMemoPage; set => nextMemoPage = value; }
+        public DelegateCommand<object> UpdateMemoTitleAndTag { get => updateMemoTitleAndTag; set => updateMemoTitleAndTag = value; }
+        public Memo TempMemo { get => tempMemo; set { tempMemo = value; RaisePropertyChanged(); } }
+
+        public DelegateCommand UpdateMemo { get => updateMemo; set => updateMemo = value; }
+        public DelegateCommand<ListBox> MemoSelectChangeCommand { get => memoSelectChangeCommand; set => memoSelectChangeCommand = value; }
 
         public MemosViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider)
         {
@@ -113,20 +124,35 @@ namespace MyTodo.ViewModels
             memoService = new MemoService();
             tagService = new TagService();
             AddMemoCommand = new DelegateCommand(addNewMemo);
+            UpdateMemo = new DelegateCommand(updateMemoInfo);
             ResetTagCommand = new DelegateCommand(resetPage);
             PreMemoPage = new DelegateCommand(getPreMemoPage);
             NextMemoPage = new DelegateCommand(getNextMemoPage);
             DelMemoCommand = new DelegateCommand<ListBoxItem>(delMemo);
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
-            MemoSelectCommand = new DelegateCommand<ListBox>(listBoxChange);
+            MemoSelectCommand = new DelegateCommand<ListBoxItem>(listBoxChange);
+            MemoSelectChangeCommand = new DelegateCommand<ListBox>(memoListBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
-            WorkspaceLocal = MainWindowModel.SelectWorkspace;
-            getMemoList();
-            getTagList(1, 10);
+            UpdateMemoTitleAndTag = new DelegateCommand<Object>(UpdateMemoTitleAndTagMethed);
+            WorkspaceLocal = MainWindowModel.SelectWorkspace;            
             aggregatorSet(this.aggregator);
+            initBaseData();
         }
 
+       
 
+        private void UpdateMemoTitleAndTagMethed(object obj)
+        {
+            
+        }
+
+        public async void initBaseData()
+        {
+            var task = await getTagList(1, 10);
+            if ( task) {
+                getMemoList();
+            }
+        }
 
         private void aggregatorSet(IEventAggregator aggregator)
         {
@@ -138,7 +164,7 @@ namespace MyTodo.ViewModels
             });
             aggregator.ResgiterFlash(arg =>
             {
-                if ("Memo".Equals(arg))
+                if ("Memo".Equals(arg.Name))
                 {
                     resetPage();
                     getMemoList();
@@ -209,10 +235,37 @@ namespace MyTodo.ViewModels
             }
 
         }
-
-        private void listBoxChange(ListBox obj)
+        private async void updateMemoInfo()
         {
-            tempMemo = (Memo)obj.SelectedItem;
+            try
+            {
+
+                JsonObject param = new JsonObject();
+                param.Add("tagId", TempMemo.tagId);
+                param.Add("title", TempMemo.title);
+                param.Add("id", TempMemo.id);
+                ApiResponse apiResponse = await memoService.UpdateMemo(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage(apiResponse.msg);
+                    getMemoList();
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
+            }
+
+        }
+
+        private void listBoxChange(ListBoxItem obj)
+        {
+            TempMemo = obj.DataContext as Memo; 
+        }
+
+        private void memoListBoxChange(ListBox obj)
+        {
+            TempMemo = (Memo)obj.SelectedItem;
         }
         /// <summary>
         /// 切换标签
@@ -257,6 +310,10 @@ namespace MyTodo.ViewModels
         /// <param name="searchWord"></param>
         public async void getMemoList(string searchWord = null)
         {
+            if(WorkspaceLocal == null) {
+                MessageBox.Show("请选择工作空间");
+                return;
+            }
             try
             {
                 JsonObject param = new JsonObject();
@@ -282,6 +339,22 @@ namespace MyTodo.ViewModels
                 MemoPages = obj.pages;
                 foreach (Memo item in obj.list)
                 {
+                    int itemTagIndex = -1;
+                    int i = 0;
+                    foreach(Tag itemTag in TagList)
+                    {
+                        if(item.tagId <= 0)
+                        {
+                            break;
+                        }
+                        if(item.tagId == itemTag.id)
+                        {
+                            itemTagIndex = i;
+                            break;
+                        }
+                        i++;
+                    }
+                    item.tagIndex = itemTagIndex;
                     MemoList.Add(item);
                 }
                 if (MemoList.Count > 0)
@@ -321,7 +394,7 @@ namespace MyTodo.ViewModels
         /// </summary>
         /// <param name="pageNum"></param>
         /// <param name="pageSize"></param>
-        public async void getTagList(int pageNum, int pageSize)
+        public async Task<bool> getTagList(int pageNum, int pageSize)
         {
             try
             {
@@ -333,10 +406,12 @@ namespace MyTodo.ViewModels
                 {
                     TagList.Add(item);
                 }
+                return true;
             }
             catch (Exception e)
             {
                 aggregator.SendMessage("网络错误");
+                return false;
             }
             finally
             {

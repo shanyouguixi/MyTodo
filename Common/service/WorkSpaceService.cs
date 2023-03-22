@@ -1,5 +1,5 @@
-﻿using MyTodo.Common.Model;
-using MyTodo.Common.service.request;
+﻿using MyMemo.Common.Model;
+using MyMemo.Common.service.request;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.service
+namespace MyMemo.Common.service
 {
     public class WorkSpaceService
     {
@@ -25,6 +25,24 @@ namespace MyTodo.Common.service
             ApiResponse<ResponseData<Workspace>> response = await httpRestClient.ExcuteAsync<ResponseData<Workspace>>(new BaseRequest() { Method = Method.Get, Parameter = param });
             var obj = response.data;
             return response;
+        }
+
+        public async Task<ApiResponse> SaveWorkspace(JsonObject param)
+        {
+            httpRestClient = new HttpRestClient("/api/workspace/addWorkspace");
+            return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Post, Parameter = param });
+        }
+
+        public async Task<ApiResponse> UpdateWorkspace(JsonObject param)
+        {
+            httpRestClient = new HttpRestClient("/api/workspace/updateWorkspace");
+            return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Post, Parameter = param });
+        }
+
+        public async Task<ApiResponse> DelWorkspace(JsonObject param)
+        {
+            httpRestClient = new HttpRestClient("/api/workspace/delWorkspace");
+            return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Delete, Parameter = param });
         }
     }
 }

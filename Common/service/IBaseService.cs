@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.service
+namespace MyMemo.Common.service
 {
     internal class IBaseService
     {

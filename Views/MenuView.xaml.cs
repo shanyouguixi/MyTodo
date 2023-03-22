@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MyTodo.Views
+namespace MyMemo.Views
 {
     /// <summary>
     /// MenuView.xaml 的交互逻辑

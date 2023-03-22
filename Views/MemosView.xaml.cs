@@ -1,6 +1,8 @@
-﻿using MyTodo.Common.Events;
-using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
+﻿using ImTools;
+using MaterialDesignThemes.Wpf;
+using MyMemo.Common.Events;
+using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
 using Prism.Events;
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace MyTodo.Views
+namespace MyMemo.Views
 {
     /// <summary>
     /// MemosView.xaml 的交互逻辑
@@ -72,7 +74,7 @@ namespace MyTodo.Views
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            tagCombo.SelectedIndex = -1;
+            tagCombox.SelectedIndex = -1;
         }
 
         private void menuBar_Selected(object sender, SelectionChangedEventArgs e)
@@ -91,5 +93,6 @@ namespace MyTodo.Views
                 webView.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(memo));
             }
         }
+
     }
 }

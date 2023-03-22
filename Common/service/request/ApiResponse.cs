@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.service.request
+namespace MyMemo.Common.service.request
 {
     public class ApiResponse<T>
     {

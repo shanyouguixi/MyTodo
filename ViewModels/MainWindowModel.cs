@@ -1,7 +1,7 @@
-﻿using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
-using MyTodo.Common.service;
-using MyTodo.Common.service.request;
+﻿using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
+using MyMemo.Common.service;
+using MyMemo.Common.service.request;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -17,7 +17,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace MyTodo.ViewModels
+namespace MyMemo.ViewModels
 {
     public class MainWindowModel : BindableBase, IConfigureService
     {
@@ -47,7 +47,15 @@ namespace MyTodo.ViewModels
             WorkSpaceList = new ObservableCollection<Workspace>();
             workSpaceService = new WorkSpaceService();
             WorkspaceSelectCommand = new DelegateCommand<ComboBox>(workspaceChage);
-            GetWorkSpaceList(1, 10);
+            GetWorkSpaceList();
+
+            aggregator.ResgiterFlash(arg =>
+            {
+                if ("Workspace".Equals(arg.Name))
+                {
+                    GetWorkSpaceList();
+                }
+            });
         }
 
 
@@ -68,24 +76,26 @@ namespace MyTodo.ViewModels
 
 
 
-        public async void GetWorkSpaceList(int pageNum, int pageSize)
+        public async void GetWorkSpaceList()
         {
             try
             {
                 JsonObject param = new JsonObject();
-                param.Add("pageNum", pageNum);
-                param.Add("pageSize", pageSize);
+                param.Add("pageNum", 1);
+                param.Add("pageSize", 100);
                 var res = await workSpaceService.GetWorkSpaceList(param);
                 if (res.code != 0)
                 {
                     aggregator.SendMessage("网络错误");
                     return;
                 }
+                WorkSpaceList.Clear();
                 var obj = res.data;
                 foreach (Workspace item in obj.list)
                 {
                     WorkSpaceList.Add(item);
                 }
+                aggregator.SetFlash("GlogalWorkspace");
             }
             catch (Exception e)
             {

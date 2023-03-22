@@ -1,11 +1,11 @@
 ﻿<Window
-    x:Class="MyTodo.MainWindow"
+    x:Class="MyMemo.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:ext="clr-namespace:MyTodo.Common.Extendsions"
+    xmlns:ext="clr-namespace:MyMemo.Common.Extendsions"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:MyTodo.Views"
+    xmlns:local="clr-namespace:MyMemo.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
@@ -87,7 +87,7 @@
                                 VerticalAlignment="Center"
                                 AutomationProperties.Name="Material Design In XAML Toolkit"
                                 FontSize="22"
-                                Text="TODO" />
+                                Text="Memo" />
                         </DockPanel>
                         <DockPanel Grid.Column="2">
                             <Grid>

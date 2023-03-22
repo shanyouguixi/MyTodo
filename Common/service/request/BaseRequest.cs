@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.service.request
+namespace MyMemo.Common.service.request
 {
     public class BaseRequest
     {

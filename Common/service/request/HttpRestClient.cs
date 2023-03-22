@@ -1,4 +1,4 @@
-﻿using MyTodo.Common.Model;
+﻿using MyMemo.Common.Model;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -10,7 +10,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MyTodo.Common.service.request
+namespace MyMemo.Common.service.request
 {
     public class HttpRestClient
     {

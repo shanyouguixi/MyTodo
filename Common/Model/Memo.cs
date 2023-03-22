@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.Model
+namespace MyMemo.Common.Model
 {
     public class Memo
     {
@@ -17,6 +17,6 @@ namespace MyTodo.Common.Model
         public int createTime { get; set; }
         public int updateTime { get; set; }
 
-
+        public int tagIndex { get; set; }
     }
 }

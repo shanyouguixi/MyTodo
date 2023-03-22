@@ -1,6 +1,6 @@
-﻿using MyTodo.Common.DialogUtils;
-using MyTodo.Common.Events;
-using MyTodo.Common.Model;
+﻿using MyMemo.Common.DialogUtils;
+using MyMemo.Common.Events;
+using MyMemo.Common.Model;
 using Prism.Events;
 using Prism.Services.Dialogs;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTodo.Common.Extendsions
+namespace MyMemo.Common.Extendsions
 {
     public static class DialogExtensions
     {

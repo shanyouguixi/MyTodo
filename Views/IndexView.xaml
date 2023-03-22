@@ -1,12 +1,46 @@
-﻿<UserControl x:Class="MyTodo.Views.IndexView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MyTodo.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="MyMemo.Views.IndexView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMemo.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
     <Grid>
-        <TextBlock Text="Index View" />
+        <DockPanel HorizontalAlignment="Left">
+            <TextBlock Text="combox1" />
+            <StackPanel Margin="0,50" Orientation="Horizontal">
+                <ComboBox x:Name="c1" Width="50">
+                    <ComboBoxItem>
+                        <TextBlock Text="1" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Text="2" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Text="3" />
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel>
+                <ListBox>
+                    <ListBoxItem>
+                        <materialDesign:PopupBox StaysOpen="True">
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="combox2" />
+                                <ComboBox
+                                    x:Name="c2"
+                                    Width="50"
+                                    ItemsSource="{Binding ElementName=c1, Path=ItemsSource}" />
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+                    </ListBoxItem>
+                </ListBox>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>

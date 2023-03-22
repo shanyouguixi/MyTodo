@@ -1,4 +1,4 @@
-﻿namespace MyTodo.ViewModels
+﻿namespace MyMemo.ViewModels
 {
     public interface IConfigureService
     {

@@ -1,8 +1,9 @@
-﻿using MyTodo.Common.Extendsions;
-using MyTodo.Common.Model;
-using MyTodo.Common.service;
-using MyTodo.Common.service.request;
-using MyTodo.ViewModels;
+﻿using MyMemo.Common.service;
+using MyMemo.Common.Extendsions;
+using MyMemo.Common.Model;
+using MyMemo.Common.service;
+using MyMemo.Common.service.request;
+using MyMemo.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Prism.Events;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace MyTodo.Common.Events
+namespace MyMemo.Common.Events
 {
     [ClassInterface(ClassInterfaceType.AutoDual)]
     [ComVisible(true)]
