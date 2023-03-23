@@ -5,10 +5,16 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>maojoo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="images\head.jpg" />
+    <None Remove="images\login.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="maojoo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +37,7 @@
 
   <ItemGroup>
     <Resource Include="images\head.jpg" />
+    <Resource Include="images\login.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

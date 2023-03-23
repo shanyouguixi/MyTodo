@@ -55,7 +55,7 @@
                                     Text="工作空间:" />
                                 <ComboBox
                                     x:Name="tagCombo"
-                                    Width="80"
+                                    Width="120"
                                     Margin="5,0,0,0"
                                     HorizontalAlignment="Center"
                                     ItemsSource="{Binding WorkSpaceList}"
@@ -101,10 +101,11 @@
                                     Orientation="Horizontal">
 
                                     <Image
+                                        x:Name="userAvatar"
                                         Width="25"
                                         Height="25"
                                         Margin="0,0,30,0"
-                                        Source="/images/head.jpg">
+                                        Source="{Binding UserInfo.avatar}">
                                         <Image.Clip>
                                             <EllipseGeometry
                                                 Center="12.5,12.5"

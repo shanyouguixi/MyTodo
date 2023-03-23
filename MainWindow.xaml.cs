@@ -2,6 +2,7 @@
 using MyMemo.Common.DialogUtils;
 using MyMemo.Common.Extendsions;
 using MyMemo.Common.Model;
+using MyTodo.Common.Model;
 using Prism.Events;
 using Prism.Regions;
 using System;
@@ -75,6 +76,7 @@ namespace MyMemo
                     tagCombo.SelectedIndex = 0;
                 }
             });
+    
 
             btnClose.Click += async (s, e) =>
             {
@@ -205,5 +207,10 @@ namespace MyMemo
             btnMax.Content = WindowPackIcon;
         }
 
+  
+
     }
+
+
+   
 }

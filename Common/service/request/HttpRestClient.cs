@@ -1,4 +1,5 @@
 ﻿using MyMemo.Common.Model;
+using MyTodo.Common.Model;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -15,6 +16,7 @@ namespace MyMemo.Common.service.request
     public class HttpRestClient
     {
         private string apiUrl;
+        private string JSESSIONID;
 
         protected readonly RestClient restClient;
 
@@ -22,6 +24,8 @@ namespace MyMemo.Common.service.request
         {
             this.apiUrl = apiUrl;
             restClient = new RestClient();
+            JSESSIONID = Application.Current.Properties["JSESSIONID"] as string;
+
         }
 
 
@@ -30,6 +34,10 @@ namespace MyMemo.Common.service.request
             RestRequest request = new RestRequest();
             request.AddHeader("Content-type", baseRequest.ContentType);
             request.Method = baseRequest.Method;
+            if(!string.IsNullOrEmpty(JSESSIONID) )
+            {
+                request.AddHeader("Authorization", JSESSIONID);
+            }
             if (baseRequest.Parameter != null)
             {
                 if (baseRequest.Method == Method.Get)
@@ -82,6 +90,13 @@ namespace MyMemo.Common.service.request
                         code = 886,
                         msg = "请求失败"
                     };
+                } else if(apiResponse.code == 1000000)
+                {
+                    return new ApiResponse<T>()
+                    {
+                        code = 1000000,
+                        msg = "请登录"
+                    };
                 }
                 else
                 {
@@ -103,6 +118,10 @@ namespace MyMemo.Common.service.request
             RestRequest request = new RestRequest();
             request.AddHeader("Content-type", baseRequest.ContentType);
             request.Method = baseRequest.Method;
+            if (!string.IsNullOrEmpty(JSESSIONID))
+            {
+                request.AddHeader("Authorization", JSESSIONID);
+            }
             if (baseRequest.Parameter != null)
             {
                 if (baseRequest.Method == Method.Get|| baseRequest.Method == Method.Delete)
@@ -138,6 +157,7 @@ namespace MyMemo.Common.service.request
                     code = 1,
                     msg = "请求失败"
                 };
+                
             }
             if (apiResponse == null)
             {
@@ -157,6 +177,15 @@ namespace MyMemo.Common.service.request
                         msg = "请求失败"
                     };
                 }
+                else if (apiResponse.code == 1000000)
+                {
+                    MessageBox.Show("请登录");
+                    return new ApiResponse()
+                    {
+                        code = 1000000,
+                        msg = "请登录"
+                    };
+                }
                 else
                 {
                     return apiResponse;
@@ -164,6 +193,7 @@ namespace MyMemo.Common.service.request
             }
             else
             {
+                MessageBox.Show("请求失败");
                 return new ApiResponse()
                 {
                     code = 1,

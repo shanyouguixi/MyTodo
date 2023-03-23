@@ -2,6 +2,7 @@
 using MyMemo.Common.Model;
 using MyMemo.Common.service;
 using MyMemo.Common.service.request;
+using MyTodo.Common.Model;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -15,7 +16,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace MyMemo.ViewModels
 {
@@ -27,10 +30,14 @@ namespace MyMemo.ViewModels
 
         private WorkSpaceService workSpaceService;
 
+        private User userInfo;
+
         private readonly IRegionManager regionManager;
 
         private static Workspace selectWorkspace;
         public DelegateCommand<ComboBox> WorkspaceSelectCommand { get; set; }
+
+
 
         public ObservableCollection<Workspace> WorkSpaceList
         {
@@ -39,6 +46,7 @@ namespace MyMemo.ViewModels
         }
 
         public static Workspace SelectWorkspace { get => selectWorkspace; set => selectWorkspace = value; }
+        public User UserInfo { get => userInfo; set { userInfo = value; RaisePropertyChanged(); } }
 
         public MainWindowModel(IRegionManager regionManager, IEventAggregator aggregator)
         {
@@ -46,8 +54,7 @@ namespace MyMemo.ViewModels
             this.regionManager = regionManager;
             WorkSpaceList = new ObservableCollection<Workspace>();
             workSpaceService = new WorkSpaceService();
-            WorkspaceSelectCommand = new DelegateCommand<ComboBox>(workspaceChage);
-            GetWorkSpaceList();
+            WorkspaceSelectCommand = new DelegateCommand<ComboBox>(workspaceChage);            
 
             aggregator.ResgiterFlash(arg =>
             {
@@ -56,11 +63,23 @@ namespace MyMemo.ViewModels
                     GetWorkSpaceList();
                 }
             });
+            aggregator.ResgiterFlash(arg =>
+            {
+                if ("UserInfo".Equals(arg.Name))
+                {
+                    flashUserInfo();
+                }
+            });
         }
 
-
-
-
+        private void flashUserInfo()
+        {
+            User user = Application.Current.Properties["user"] as User;
+            if (user != null)
+            {
+                UserInfo= user;
+            }
+        }
 
         public void Configure()
         {
@@ -86,7 +105,7 @@ namespace MyMemo.ViewModels
                 var res = await workSpaceService.GetWorkSpaceList(param);
                 if (res.code != 0)
                 {
-                    aggregator.SendMessage("网络错误");
+                    aggregator.SendMessage(res.msg);
                     return;
                 }
                 WorkSpaceList.Clear();

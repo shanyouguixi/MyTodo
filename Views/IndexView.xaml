@@ -10,37 +10,27 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <DockPanel HorizontalAlignment="Left">
-            <TextBlock Text="combox1" />
-            <StackPanel Margin="0,50" Orientation="Horizontal">
-                <ComboBox x:Name="c1" Width="50">
-                    <ComboBoxItem>
-                        <TextBlock Text="1" />
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Text="2" />
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Text="3" />
-                    </ComboBoxItem>
-                </ComboBox>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="9*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel
+                Grid.Row="0"
+                Height="60"
+                VerticalAlignment="Center"
+                Background="#CCC"
+                Orientation="Horizontal">
+                <TextBlock Margin="10,20" Text="{Binding UserInfo.userName}" />
             </StackPanel>
-            <StackPanel>
-                <ListBox>
-                    <ListBoxItem>
-                        <materialDesign:PopupBox StaysOpen="True">
-
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="combox2" />
-                                <ComboBox
-                                    x:Name="c2"
-                                    Width="50"
-                                    ItemsSource="{Binding ElementName=c1, Path=ItemsSource}" />
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-                    </ListBoxItem>
-                </ListBox>
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="{Binding Title}" />
             </StackPanel>
-        </DockPanel>
+        </Grid>
+        <TextBlock Grid.Row="1" Text="未开发" />
     </Grid>
 </UserControl>
