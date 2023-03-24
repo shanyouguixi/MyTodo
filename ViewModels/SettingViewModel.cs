@@ -294,6 +294,7 @@ namespace MyMemo.ViewModels
                 {
                     aggregator.SendMessage(apiResponse.msg);
                     GetWorkSpaceList();
+                    aggregator.SetFlash("Workspace");
                 }
             }
             catch (Exception e)

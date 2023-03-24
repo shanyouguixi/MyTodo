@@ -34,7 +34,7 @@ namespace MyMemo.Common.service.request
             RestRequest request = new RestRequest();
             request.AddHeader("Content-type", baseRequest.ContentType);
             request.Method = baseRequest.Method;
-            if(!string.IsNullOrEmpty(JSESSIONID) )
+            if (!string.IsNullOrEmpty(JSESSIONID))
             {
                 request.AddHeader("Authorization", JSESSIONID);
             }
@@ -64,7 +64,8 @@ namespace MyMemo.Common.service.request
             try
             {
                 apiResponse = JsonConvert.DeserializeObject<ApiResponse<T>>(response.Content);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return new ApiResponse<T>()
                 {
@@ -90,7 +91,8 @@ namespace MyMemo.Common.service.request
                         code = 886,
                         msg = "请求失败"
                     };
-                } else if(apiResponse.code == 1000000)
+                }
+                else if (apiResponse.code == 1000000)
                 {
                     return new ApiResponse<T>()
                     {
@@ -124,7 +126,7 @@ namespace MyMemo.Common.service.request
             }
             if (baseRequest.Parameter != null)
             {
-                if (baseRequest.Method == Method.Get|| baseRequest.Method == Method.Delete)
+                if (baseRequest.Method == Method.Get || baseRequest.Method == Method.Delete)
                 {
                     string paramStr = ObjectToGetParam(baseRequest.Parameter);
                     apiUrl += paramStr;
@@ -136,7 +138,7 @@ namespace MyMemo.Common.service.request
             }
             restClient.Options.BaseUrl = new Uri(baseRequest.Url + apiUrl);
             RestResponse response = await restClient.ExecuteAsync(request);
-            if (response == null||response.StatusCode != HttpStatusCode.OK)
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show("请求失败");
                 return new ApiResponse()
@@ -157,7 +159,7 @@ namespace MyMemo.Common.service.request
                     code = 1,
                     msg = "请求失败"
                 };
-                
+
             }
             if (apiResponse == null)
             {
@@ -202,7 +204,88 @@ namespace MyMemo.Common.service.request
             }
         }
 
+        public async Task<ApiResponse<T>> UplodFile<T>(BaseRequest baseRequest,string filePath)
+        {
+            RestRequest request = new RestRequest();
+            request.AddHeader("Content-type", baseRequest.ContentType);
+            request.Method = baseRequest.Method;
+            if (!string.IsNullOrEmpty(JSESSIONID))
+            {
+                request.AddHeader("Authorization", JSESSIONID);
+            }
+            request.AddHeader("Content-Type", "multipart/form-data");
+            request.AddFile("file", filePath);
+            if (baseRequest.Parameter != null)
+            {
+                request.AddBody(baseRequest.Parameter);
+            }
+            restClient.Options.BaseUrl = new Uri(baseRequest.Url + apiUrl);
+            RestResponse response = await restClient.ExecuteAsync(request);
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
+            {
+                MessageBox.Show("请求失败");
+                return new ApiResponse<T>()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+            ApiResponse<T> apiResponse = null;
+            try
+            {
+                apiResponse = JsonConvert.DeserializeObject<ApiResponse<T>>(response.Content);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<T>()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
 
+            }
+            if (apiResponse == null)
+            {
+                return new ApiResponse<T>()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                if (apiResponse.code == 886)
+                {
+                    return new ApiResponse<T>()
+                    {
+                        code = 886,
+                        msg = "请求失败"
+                    };
+                }
+                else if (apiResponse.code == 1000000)
+                {
+                    MessageBox.Show("请登录");
+                    return new ApiResponse<T>()
+                    {
+                        code = 1000000,
+                        msg = "请登录"
+                    };
+                }
+                else
+                {
+                    return apiResponse;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请求失败");
+                return new ApiResponse<T>()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+        }
 
 
         public static string ObjectToGetParam(JsonObject param)

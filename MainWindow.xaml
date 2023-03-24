@@ -49,7 +49,7 @@
                                 DockPanel.Dock="Top"
                                 Orientation="Horizontal">
                                 <TextBlock
-                                    Width="60"
+                                    Width="80"
                                     VerticalAlignment="Center"
                                     Foreground="Black"
                                     Text="工作空间:" />
@@ -100,19 +100,69 @@
                                     HorizontalAlignment="Right"
                                     Orientation="Horizontal">
 
-                                    <Image
-                                        x:Name="userAvatar"
-                                        Width="25"
-                                        Height="25"
-                                        Margin="0,0,30,0"
-                                        Source="{Binding UserInfo.avatar}">
-                                        <Image.Clip>
-                                            <EllipseGeometry
-                                                Center="12.5,12.5"
-                                                RadiusX="12.5"
-                                                RadiusY="12.5" />
-                                        </Image.Clip>
-                                    </Image>
+
+                                    <materialDesign:PopupBox StaysOpen="True">
+
+                                        <materialDesign:PopupBox.ToggleContent>
+
+                                            <Image
+                                                x:Name="userAvatar"
+                                                Width="25"
+                                                Height="25"
+                                                Margin="0,0,30,0"
+                                                Source="{Binding UserInfo.avatar}">
+                                                <Image.Clip>
+                                                    <EllipseGeometry
+                                                        Center="12.5,12.5"
+                                                        RadiusX="12.5"
+                                                        RadiusY="12.5" />
+                                                </Image.Clip>
+                                            </Image>
+
+
+                                        </materialDesign:PopupBox.ToggleContent>
+                                        <Grid Width="220" Height="150">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="3*" />
+                                                <RowDefinition Height="2*" />
+                                                <RowDefinition Height="2*" />
+                                            </Grid.RowDefinitions>
+                                            <DockPanel Grid.Row="0" Margin="10,0">
+                                                <StackPanel
+                                                    VerticalAlignment="Center"
+                                                    DockPanel.Dock="Top"
+                                                    Orientation="Horizontal">
+                                                    <Image
+                                                        Width="30"
+                                                        Height="30"
+                                                        Source="{Binding UserInfo.avatar}">
+                                                        <Image.Clip>
+                                                            <EllipseGeometry
+                                                                Center="12.5,12.5"
+                                                                RadiusX="12.5"
+                                                                RadiusY="12.5" />
+                                                        </Image.Clip>
+                                                    </Image>
+                                                    <StackPanel>
+                                                        <TextBlock Margin="5" Text="{Binding UserInfo.userName}" />
+                                                        <TextBlock Margin="5" Text="{Binding UserInfo.email}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <Button
+                                                Grid.Row="1"
+                                                Command="{Binding Logout}"
+                                                CommandParameter="exit"
+                                                Content="退出"
+                                                ToolTip="退出" />
+                                            <Button
+                                                Grid.Row="2"
+                                                Command="{Binding Logout}"
+                                                CommandParameter="lotout"
+                                                Content="注销"
+                                                ToolTip="注销" />
+                                        </Grid>
+                                    </materialDesign:PopupBox>
                                     <Button
                                         x:Name="btnMin"
                                         Click="btnMin_Click"

@@ -315,7 +315,7 @@ namespace MyMemo.ViewModels
         public async void getMemoList(string searchWord = null)
         {
             if(WorkspaceLocal == null) {
-                MessageBox.Show("请选择工作空间");
+                
                 return;
             }
             try

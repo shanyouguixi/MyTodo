@@ -1,0 +1,127 @@
+﻿<UserControl
+    x:Class="MyTodo.Views.LoginView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MyTodo.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pass="clr-namespace:MyTodo.Common.Extendsions"
+    xmlns:prism="http://prismlibrary.com/"
+    Width="600"
+    Height="350"
+    mc:Ignorable="d">
+    <prism:Dialog.WindowStyle>
+        <Style TargetType="Window">
+            <Setter Property="Width" Value="600" />
+            <Setter Property="Height" Value="350" />
+            <Setter Property="SizeToContent" Value="WidthAndHeight" />
+            <Setter Property="ResizeMode" Value="NoResize" />
+            <Setter Property="prism:Dialog.WindowStartupLocation" Value="CenterScreen" />
+        </Style>
+    </prism:Dialog.WindowStyle>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <materialDesign:Snackbar
+            x:Name="Snackbar"
+            Grid.ColumnSpan="2"
+            Panel.ZIndex="1"
+            MessageQueue="{materialDesign:MessageQueue}" />
+        <Image Margin="50" Source="../images/login.png" />
+
+        <materialDesign:Transitioner Grid.Column="1" SelectedIndex="{Binding SelectIndex}">
+            <materialDesign:TransitionerSlide>
+                <DockPanel Margin="15" VerticalAlignment="Center">
+                    <TextBlock
+                        Margin="0,10"
+                        DockPanel.Dock="Top"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Text="欢迎使用" />
+                    <TextBox
+                        Margin="0,10"
+                        materialDesign:HintAssist.Hint="请输入账号"
+                        DockPanel.Dock="Top"
+                        Text="{Binding UserName}" />
+                    <PasswordBox
+                        Margin="0,10"
+                        materialDesign:HintAssist.Hint="请输入密码"
+                        pass:PassWordExtensions.PassWord="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        DockPanel.Dock="Top">
+                        <i:Interaction.Behaviors>
+                            <pass:PasswordBehavior />
+                        </i:Interaction.Behaviors>
+                    </PasswordBox>
+                    <Button
+                        Command="{Binding ExecuteCommand}"
+                        CommandParameter="Login"
+                        Content="登录"
+                        DockPanel.Dock="Top" />
+                    <DockPanel Margin="0,5" LastChildFill="False">
+                        <TextBlock Text="注册账号">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseLeftButtonDown">
+                                    <i:InvokeCommandAction Command="{Binding ExecuteCommand}" CommandParameter="ToRegister" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBlock>
+                        <TextBlock DockPanel.Dock="Right" Text="忘记密码" />
+                    </DockPanel>
+                </DockPanel>
+            </materialDesign:TransitionerSlide>
+            <materialDesign:TransitionerSlide>
+                <DockPanel Margin="15" VerticalAlignment="Center">
+                    <TextBlock
+                        Margin="0,10"
+                        DockPanel.Dock="Top"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Text="欢迎使用" />
+                    <TextBox
+                        Margin="0,10"
+                        materialDesign:HintAssist.Hint="请输入账号"
+                        DockPanel.Dock="Top"
+                        Text="{Binding UserDto.userName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <PasswordBox
+                        Margin="0,10"
+                        materialDesign:HintAssist.Hint="请输入密码"
+                        pass:PassWordExtensions.PassWord="{Binding UserDto.password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        DockPanel.Dock="Top">
+                        <i:Interaction.Behaviors>
+                            <pass:PasswordBehavior />
+                        </i:Interaction.Behaviors>
+                    </PasswordBox>
+                    <PasswordBox
+                        Margin="0,10"
+                        materialDesign:HintAssist.Hint="请输入密码"
+                        pass:PassWordExtensions.PassWord="{Binding UserDto.newPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        DockPanel.Dock="Top">
+                        <i:Interaction.Behaviors>
+                            <pass:PasswordBehavior />
+                        </i:Interaction.Behaviors>
+                    </PasswordBox>
+                    <Button
+                        Command="{Binding ExecuteCommand}"
+                        CommandParameter="Register"
+                        Content="注册"
+                        DockPanel.Dock="Top" />
+                    <DockPanel Margin="0,5" LastChildFill="False">
+                        <TextBlock Text="返回登录">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseLeftButtonDown">
+                                    <i:InvokeCommandAction Command="{Binding ExecuteCommand}" CommandParameter="Register" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBlock>
+                    </DockPanel>
+                </DockPanel>
+            </materialDesign:TransitionerSlide>
+
+        </materialDesign:Transitioner>
+    </Grid>
+</UserControl>

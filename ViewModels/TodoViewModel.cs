@@ -116,14 +116,21 @@ namespace MyTodo.ViewModels
         {
             try
             {
-                if(TempTodo == null)
+                if (TempTodo == null)
                 {
                     return;
                 }
                 JsonObject param = new JsonObject();
                 param.Add("id", TempTodo.id);
-                
-                param.Add("tagId", TagList[TempTodo.tagIndex].id);
+                int selectIndex = TempTodo.tagIndex;
+                if (selectIndex == -1)
+                {
+                    param.Add("tagId", -1);
+                }
+                else
+                {
+                    param.Add("tagId", TagList[TempTodo.tagIndex].id);
+                }
                 param.Add("title", TempTodo.title);
                 param.Add("content", TempTodo.content);
                 ApiResponse apiResponse = await todoService.UpdateTodo(param);
@@ -238,7 +245,7 @@ namespace MyTodo.ViewModels
         {
             if (WorkspaceLocal == null)
             {
-                MessageBox.Show("请选择工作空间");
+
                 return;
             }
             try
@@ -284,7 +291,7 @@ namespace MyTodo.ViewModels
                     item.tagIndex = itemTagIndex;
                     TodoList.Add(item);
                 }
-                
+
             }
             catch (Exception e)
             {
