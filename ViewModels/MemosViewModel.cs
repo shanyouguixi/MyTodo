@@ -25,6 +25,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using static System.Net.Mime.MediaTypeNames;
+using MyTodo.Common.Util;
 
 namespace MyMemo.ViewModels
 {
@@ -42,6 +43,8 @@ namespace MyMemo.ViewModels
         public DelegateCommand<ComboBox> tagSelectCommand;
         public DelegateCommand<ListBoxItem> memoSelectCommand;
         private DelegateCommand<ListBox> memoSelectChangeCommand;
+        private DelegateCommand<ComboBox> timeSelectCommand;
+
         public DelegateCommand<string> searchWordChangedCommand;
         private DelegateCommand<Object> updateMemoTitleAndTag;
         private DelegateCommand addMemoCommand;
@@ -50,6 +53,7 @@ namespace MyMemo.ViewModels
         private DelegateCommand preMemoPage;
         private DelegateCommand nextMemoPage;
         public DelegateCommand<ListBoxItem> delMemoCommand;
+        private DelegateCommand<Memo> memoSelectedCommand;
         public static int selectTag = -1;
         private string searchWord = "";
         private Workspace workspaceLocal;
@@ -58,6 +62,10 @@ namespace MyMemo.ViewModels
         public static int memosTotal = 0;
         public static int memoPages = 0;
 
+        private int selecListBoxIndex = 0;
+
+        private int startTime;
+        private int endTime;
 
 
         public DelegateCommand<ComboBox> TagSelectCommand
@@ -115,6 +123,12 @@ namespace MyMemo.ViewModels
         public DelegateCommand UpdateMemo { get => updateMemo; set => updateMemo = value; }
         public DelegateCommand<ListBox> MemoSelectChangeCommand { get => memoSelectChangeCommand; set => memoSelectChangeCommand = value; }
 
+        public int StartTime { get => startTime; set => startTime = value; }
+        public int EndTime { get => endTime; set => endTime = value; }
+        public DelegateCommand<ComboBox> TimeSelectCommand { get => timeSelectCommand; set => timeSelectCommand = value; }
+        public int SelecListBoxIndex { get => selecListBoxIndex; set => selecListBoxIndex = value; }
+        public DelegateCommand<Memo> MemoSelectedCommand { get => memoSelectedCommand; set => memoSelectedCommand = value; }
+
         public MemosViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider)
         {
             dialogHost = provider.Resolve<IDialogHostService>();
@@ -134,12 +148,14 @@ namespace MyMemo.ViewModels
             MemoSelectChangeCommand = new DelegateCommand<ListBox>(memoListBoxChange);
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
             UpdateMemoTitleAndTag = new DelegateCommand<Object>(UpdateMemoTitleAndTagMethed);
+            TimeSelectCommand = new DelegateCommand<ComboBox>(selectTimeChage);
+            MemoSelectedCommand = new DelegateCommand<Memo>(memoSelect);
             WorkspaceLocal = MainWindowModel.SelectWorkspace;            
             aggregatorSet(this.aggregator);
             initBaseData();
         }
 
-       
+      
 
         private void UpdateMemoTitleAndTagMethed(object obj)
         {
@@ -152,6 +168,37 @@ namespace MyMemo.ViewModels
             if ( task) {
                 getMemoList();
             }
+        }
+
+        private void selectTimeChage(ComboBox obj)
+        {
+            // 全部 今天 昨天 进7天
+            int selectIndex = obj.SelectedIndex;
+            if (selectIndex == -1)
+            {
+                return;
+            }
+            else if (selectIndex == 0)
+            {
+                StartTime = -1;
+                EndTime = -1;
+            }
+            else if (selectIndex == 1)
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date);
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            else if (selectIndex == 2)
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date.AddDays(-1));
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            else
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date.AddDays(-6));
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            getMemoList();
         }
 
         private void aggregatorSet(IEventAggregator aggregator)
@@ -264,7 +311,23 @@ namespace MyMemo.ViewModels
 
         private void listBoxChange(ListBoxItem obj)
         {
-            TempMemo = obj.DataContext as Memo; 
+            TempMemo = obj.DataContext as Memo;
+           
+        }
+
+        private void memoSelect(Memo obj)
+        {
+            TempMemo = obj;
+            int selectIndex = 0;
+            foreach (Memo item in MemoList)
+            {
+                if (item.id == TempMemo.id)
+                {
+                    SelecListBoxIndex = selectIndex;
+                    break;
+                }
+                selectIndex++;
+            }
         }
 
         private void memoListBoxChange(ListBox obj)
@@ -332,11 +395,24 @@ namespace MyMemo.ViewModels
                 {
                     param.Add("searchWord", SearchWord);
                 }
+                if (StartTime > 0)
+                {
+                    param.Add("startDate", StartTime);
+                }
+                if (EndTime > 0)
+                {
+                    param.Add("endDate", EndTime);
+                }
+                if (SelectTag != -1)
+                {
+                    param.Add("tagId", SelectTag);
+                }
                 var res = await memoService.MemoList(param);
                 var obj = res.data;
                 if (res.code != 0)
                 {
                     aggregator.SendMessage(res.msg);
+                    return;
                 }
                 memoList.Clear();
                 MemosTotal = obj.total;
@@ -363,7 +439,7 @@ namespace MyMemo.ViewModels
                 }
                 if (MemoList.Count > 0)
                 {
-                    aggregator.SetMemo(MemoList[0]);
+                    aggregator.SetMemo(MemoList[SelecListBoxIndex]);
                 }
             }
             catch (Exception e)

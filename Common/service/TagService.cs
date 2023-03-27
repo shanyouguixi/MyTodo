@@ -26,7 +26,7 @@ namespace MyMemo.Common.service
             var obj = response.data;
             return response.data;
         }
-
+        
         public async Task<ApiResponse> SaveTag(JsonObject param)
         {
             httpRestClient = new HttpRestClient("/api/tag/addTag");
@@ -45,5 +45,7 @@ namespace MyMemo.Common.service
             httpRestClient = new HttpRestClient("/api/tag/delTag");
             return await httpRestClient.ExcuteAsync(new BaseRequest() { Method = Method.Delete, Parameter = param });
         }
+
+
     }
 }

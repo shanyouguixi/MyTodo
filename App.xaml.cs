@@ -85,6 +85,7 @@ namespace MyMemo
             containerRegistry.RegisterForNavigation<SettingView, SettingViewModel>();
             containerRegistry.RegisterForNavigation<MainWindow, MainWindowModel>();
             containerRegistry.RegisterForNavigation<MsgView, MsgViewModel>();
+            containerRegistry.RegisterForNavigation<AlarmClockView, AlarmClockViewModel>();
             containerRegistry.Register<IDialogHostService, DialogHostService>();
 
             containerRegistry.RegisterDialog<LoginView, LoginViewModel>();

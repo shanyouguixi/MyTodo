@@ -16,7 +16,7 @@ namespace MyTodo.Common.Model
         public string color { get; set; }
         public int createTime { get; set; }
         public int updateTime { get; set; }
-        public string remarkDate { get; set; }
+        public DateTime? remarkDate { get; set; }
 
         public int tagIndex { get; set; }
     }

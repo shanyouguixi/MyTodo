@@ -28,6 +28,14 @@ namespace MyTodo.Common.service
             return response;
         }
 
+        public async Task<ApiResponse<ResponseData<Todo>>> getImportantTodoList(JsonObject param)
+        {
+            httpRestClient = new HttpRestClient("/api/todo/getImportantTodoList");
+            ApiResponse<ResponseData<Todo>> response = await httpRestClient.ExcuteAsync<ResponseData<Todo>>(new BaseRequest() { Method = Method.Get, Parameter = param });
+            var obj = response.data;
+            return response;
+        }
+
         public async Task<ApiResponse> SaveTodo(JsonObject param)
         {
             httpRestClient = new HttpRestClient("/api/todo/addTodo");

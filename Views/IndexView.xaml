@@ -12,25 +12,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*" />
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
             <RowDefinition Height="5*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1" Margin="15">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel
-                Grid.Row="0"
-                Height="60"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <TextBlock Margin="10,20" Text="{Binding UserInfo.userName}" />
-            </StackPanel>
-            <StackPanel Grid.Row="1">
-                <TextBlock Text="{Binding Title}" />
-            </StackPanel>
-        </Grid>
+
         <materialDesign:Transitioner Grid.Row="0" SelectedIndex="{Binding SelectIndex}">
             <materialDesign:TransitionerSlide>
                 <DockPanel Margin="15" VerticalAlignment="Center">
@@ -123,5 +108,101 @@
             </materialDesign:TransitionerSlide>
 
         </materialDesign:Transitioner>
+        <DockPanel
+            Grid.Row="1"
+            VerticalAlignment="Center"
+            LastChildFill="False">
+            <materialDesign:PackIcon
+                Width="30"
+                Height="30"
+                Margin="20,0"
+                DockPanel.Dock="Left"
+                Kind="Clock" />
+            <Button
+                Width="60"
+                Margin="15,0"
+                Padding="0"
+                Command="{Binding FlashClockCommand}"
+                Content="刷新"
+                DockPanel.Dock="Right" />
+        </DockPanel>
+        <ScrollViewer Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding TodoList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Margin="10"
+                            Background="Green"
+                            CornerRadius="5">
+
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect
+                                                        BlurRadius="10"
+                                                        ShadowDepth="1"
+                                                        Color="#DDDDDD" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <StackPanel
+                                    Width="230"
+                                    Height="150"
+                                    Margin="10,10">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="3*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            FontSize="30"
+                                            FontWeight="Bold"
+                                            Text="{Binding title}" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            FontSize="15"
+                                            Text="{Binding content}" />
+                                        <TextBlock Grid.Row="2" Text="{Binding remarkDate}" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <Canvas ClipToBounds="True">
+                                    <Border
+                                        Canvas.Top="10"
+                                        Canvas.Right="-50"
+                                        Width="120"
+                                        Height="120"
+                                        Background="#FFFFFF"
+                                        CornerRadius="100"
+                                        Opacity="0.1" />
+                                    <Border
+                                        Canvas.Top="80"
+                                        Canvas.Right="-30"
+                                        Width="120"
+                                        Height="120"
+                                        Background="#FFFFFF"
+                                        CornerRadius="100"
+                                        Opacity="0.1" />
+                                </Canvas>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>

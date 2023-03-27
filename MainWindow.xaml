@@ -14,6 +14,18 @@
     Height="800"
     WindowStyle="None"
     mc:Ignorable="d">
+    <Window.Resources>
+        <ContextMenu x:Key="NotifyIconMenu" StaysOpen="False">
+            <MenuItem
+                Name="MenuOpen"
+                Click="MenuOpen_Click"
+                Header="打开" />
+            <MenuItem
+                Name="MenuExit"
+                Click="MenuExit_Click"
+                Header="退出" />
+        </ContextMenu>
+    </Window.Resources>
 
     <materialDesign:DialogHost
         x:Name="dialogHost"

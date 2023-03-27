@@ -47,19 +47,18 @@
                 </TextBox>
                 <StackPanel
                     Grid.Row="1"
-                    Width="170"
-                    Margin="5,10"
+                    Width="200"
                     Orientation="Horizontal">
                     <TextBlock
-                        Width="60"
+                        Width="30"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Text="标签:" />
                     <ComboBox
                         x:Name="tagCombox"
-                        Width="80"
-                        Margin="5,0,0,0"
+                        Width="90"
                         HorizontalAlignment="Center"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
                         ItemsSource="{Binding TagList}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -76,18 +75,23 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button
-                        Margin="10,0,0,0"
-                        Padding="0"
-                        Click="Button_Click"
-                        Command="{Binding ResetTagCommand}"
-                        Style="{StaticResource MaterialDesignFlatLightButton}">
-                        <materialDesign:PackIcon
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Foreground="Red"
-                            Kind="Close" />
-                    </Button>
+                    <StackPanel
+                        Width="50"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <ComboBox x:Name="TimeSelectionChanged" SelectedIndex="0">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding TimeSelectCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <ComboBoxItem Content="全部" />
+                            <ComboBoxItem Content="今天" />
+                            <ComboBoxItem Content="昨天" />
+                            <ComboBoxItem Content="近7天" />
+                        </ComboBox>
+                    </StackPanel>
                 </StackPanel>
 
                 <Button
@@ -164,7 +168,7 @@
                     </ListBox>
                 </materialDesign:TransitioningContent>
                 <StackPanel
-                    Grid.Row="4"
+                    Grid.Row="5"
                     Width="auto"
                     Height="40"
                     HorizontalAlignment="Center"
@@ -224,8 +228,9 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" MaxHeight="40">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="3*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel
                         Grid.Column="0"
@@ -258,6 +263,19 @@
                         <TextBlock Margin="5,5" Text="标题：" />
                         <TextBox Width="100" Text="{Binding TempTodo.title}" />
                     </StackPanel>
+                    <StackPanel
+                        Grid.Column="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBlock Margin="5,5" Text="提醒：" />
+                        <TextBox
+                            x:Name="PART_TextBox"
+                            Width="150"
+                            Text="{Binding TempTodo.remarkDate, StringFormat='yyyy-MM-dd HH:mm:ss'}" />
+
+
+                    </StackPanel>
                 </Grid>
                 <TextBox
                     Grid.Row="1"
@@ -268,9 +286,10 @@
                     Text="{Binding TempTodo.content}"
                     TextWrapping="Wrap" />
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
-                    <Button Margin="15,1"
-                            Content="Save"
-                            Command="{Binding UpdateTodoCommand}" />
+                    <Button
+                        Margin="15,1"
+                        Command="{Binding UpdateTodoCommand}"
+                        Content="Save" />
                     <Button Margin="15,1" Content="Cancel" />
                 </StackPanel>
             </Grid>

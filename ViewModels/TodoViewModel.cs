@@ -4,8 +4,10 @@ using MyMemo.Common.Model;
 using MyMemo.Common.service;
 using MyMemo.Common.service.request;
 using MyMemo.ViewModels;
+using MyTodo.Common.Events;
 using MyTodo.Common.Model;
 using MyTodo.Common.service;
+using MyTodo.Common.Util;
 using MyTodo.ViewModels;
 using Prism.Commands;
 using Prism.Events;
@@ -14,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -44,12 +47,18 @@ namespace MyTodo.ViewModels
         public static int todosTotal = 0;
         public static int todoPages = 0;
 
+        private int selectListBoxIndex = 0;
+
+        private int startTime;
+        private int endTime;
+
         private Todo tempTodo;
 
 
         private DelegateCommand<string> searchWordChangedCommand;
 
         private DelegateCommand<ComboBox> tagSelectCommand;
+        private DelegateCommand<ComboBox> timeSelectCommand;
 
         private DelegateCommand resetTagCommand;
 
@@ -88,6 +97,10 @@ namespace MyTodo.ViewModels
         public Todo TempTodo { get => tempTodo; set { tempTodo = value; RaisePropertyChanged(); } }
 
         public DelegateCommand UpdateTodoCommand { get => updateTodoCommand; set => updateTodoCommand = value; }
+        public DelegateCommand<ComboBox> TimeSelectCommand { get => timeSelectCommand; set => timeSelectCommand = value; }
+        public int StartTime { get => startTime; set => startTime = value; }
+        public int EndTime { get => endTime; set => endTime = value; }
+        public int SelectListBoxIndex { get => selectListBoxIndex; set => selectListBoxIndex = value; }
 
         public TodoViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider)
         {
@@ -100,7 +113,9 @@ namespace MyTodo.ViewModels
             TodoList = new ObservableCollection<Todo>();
 
             SearchWordChangedCommand = new DelegateCommand<string>(SearchWordChanged);
+
             TagSelectCommand = new DelegateCommand<ComboBox>(tagChage);
+            TimeSelectCommand = new DelegateCommand<ComboBox>(selectTimeChage);
             ResetTagCommand = new DelegateCommand(resetPage);
             AddTodoCommand = new DelegateCommand(addNewTodo);
             NextTodoPage = new DelegateCommand(getNextTodoPage);
@@ -111,6 +126,8 @@ namespace MyTodo.ViewModels
             aggregatorSet(this.aggregator);
             initBaseData();
         }
+
+
 
         private async void updateTempTodo()
         {
@@ -133,11 +150,17 @@ namespace MyTodo.ViewModels
                 }
                 param.Add("title", TempTodo.title);
                 param.Add("content", TempTodo.content);
+                param.Add("remarkDate", TempTodo.remarkDate.ToString());
                 ApiResponse apiResponse = await todoService.UpdateTodo(param);
                 if (apiResponse.code == 0)
                 {
                     aggregator.SendMessage(apiResponse.msg);
                     getTodoList();
+                    this.aggregator.SetFlash("TodoClock");
+                }
+                else
+                {
+                    aggregator.SendMessage("更新失败");
                 }
             }
             catch (Exception e)
@@ -148,7 +171,22 @@ namespace MyTodo.ViewModels
 
         private void tempTodoSelected(Todo obj)
         {
+            if (obj == null)
+            {
+                return;
+            }
+            int tempIndex = 0;
+            foreach (Todo item in TodoList)
+            {
+                if (item.id == obj.id)
+                {
+                    SelectListBoxIndex = tempIndex;
+                    break;
+                }
+                tempIndex++;
+            }
             TempTodo = obj;
+
         }
 
         public async void initBaseData()
@@ -196,6 +234,7 @@ namespace MyTodo.ViewModels
                     aggregator.SendMessage(apiResponse.msg);
                     resetPage();
                     getTodoList();
+                    this.aggregator.SetFlash("TodoClock");
                 }
             }
             catch (Exception e)
@@ -219,6 +258,7 @@ namespace MyTodo.ViewModels
                 {
                     aggregator.SendMessage("删除成功");
                     getTodoList();
+                    this.aggregator.SetFlash("TodoClock");
                 }
                 else
                 {
@@ -241,11 +281,40 @@ namespace MyTodo.ViewModels
             getTodoList();
         }
 
+        private void selectTimeChage(ComboBox obj)
+        {
+            // 全部 今天 昨天 进7天
+            int selectIndex = obj.SelectedIndex;
+            if (selectIndex == -1)
+            {
+                return;
+            }
+            else if (selectIndex == 0)
+            {
+                StartTime = -1;
+                EndTime = -1;
+            }
+            else if (selectIndex == 1)
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date);
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            else if (selectIndex == 2)
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date.AddDays(-1));
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            else
+            {
+                StartTime = TimeUtil.getSecond(DateTime.Now.Date.AddDays(-6));
+                EndTime = TimeUtil.getSecond(DateTime.Now);
+            }
+            getTodoList();
+        }
         public async void getTodoList(string searchWord = null)
         {
             if (WorkspaceLocal == null)
             {
-
                 return;
             }
             try
@@ -254,6 +323,16 @@ namespace MyTodo.ViewModels
                 param.Add("workspaceId", WorkspaceLocal.id);
                 param.Add("pageNum", TodoPageNum);
                 param.Add("pageSize", TodoPageSize);
+
+
+                if (StartTime > 0)
+                {
+                    param.Add("startDate", StartTime);
+                }
+                if (EndTime > 0)
+                {
+                    param.Add("endDate", EndTime);
+                }
                 if (SelectTag != -1)
                 {
                     param.Add("tagId", SelectTag);
@@ -267,6 +346,7 @@ namespace MyTodo.ViewModels
                 if (res.code != 0)
                 {
                     aggregator.SendMessage(res.msg);
+                    return;
                 }
                 TodoList.Clear();
                 TodosTotal = obj.total;
@@ -290,6 +370,10 @@ namespace MyTodo.ViewModels
                     }
                     item.tagIndex = itemTagIndex;
                     TodoList.Add(item);
+                }
+                if (TodoList.Count > 0)
+                {
+                    TempTodo = TodoList[SelectListBoxIndex];
                 }
 
             }
@@ -369,5 +453,6 @@ namespace MyTodo.ViewModels
                 getTodoList();
             }
         }
+
     }
 }
