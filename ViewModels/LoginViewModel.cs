@@ -135,7 +135,12 @@ namespace MyTodo.ViewModels
                 if (apiResponse.code == 0)
                 {
                     UserInfo userinfo = apiResponse.data;
-
+                    if (userinfo == null)
+                    {
+                        aggregator.SendMessage("登录失败", "Login");
+                        MessageBox.Show("登录失败");
+                        return;
+                    }
                     string userJson = JsonConvert.SerializeObject(userinfo.user);                    
                     CacheManager.DeleteSection("USERINFO");
                     CacheManager.IniWritevalue("USERINFO", "user", userJson);
