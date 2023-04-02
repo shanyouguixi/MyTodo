@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace MyTodo.Common.Model
 {
-    public class Resource
+    public class UserResource
     {
+        public int id { get; set; }
         public string fileName { get; set; }
-        public string fileUrl { get; set; }
-
+        public string url { get; set; }
+        public int typeId { get; set; }
+        public int userId { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using MyTodo.Common.Cache;
 using MyTodo.Common.Model;
 using MyTodo.ViewModels;
 using MyTodo.Views;
+using MyTodo.Views.Dialog;
 using Newtonsoft.Json;
 using Prism.DryIoc;
 using Prism.Events;

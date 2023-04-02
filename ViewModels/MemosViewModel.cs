@@ -37,7 +37,7 @@ namespace MyMemo.ViewModels
         private MemoService memoService;
         private TagService tagService;
 
-        private Memo tempMemo;
+        public Memo tempMemo;
         public ObservableCollection<Memo> memoList;
         public ObservableCollection<Tag> tagList;
         public DelegateCommand<ComboBox> tagSelectCommand;
@@ -62,7 +62,7 @@ namespace MyMemo.ViewModels
         public static int memosTotal = 0;
         public static int memoPages = 0;
 
-        private int selecListBoxIndex = 0;
+        private int selecListBoxIndex = -1;
 
         private int startTime;
         private int endTime;
@@ -150,22 +150,23 @@ namespace MyMemo.ViewModels
             UpdateMemoTitleAndTag = new DelegateCommand<Object>(UpdateMemoTitleAndTagMethed);
             TimeSelectCommand = new DelegateCommand<ComboBox>(selectTimeChage);
             MemoSelectedCommand = new DelegateCommand<Memo>(memoSelect);
-            WorkspaceLocal = MainWindowModel.SelectWorkspace;            
+            WorkspaceLocal = MainWindowModel.SelectWorkspace;
             aggregatorSet(this.aggregator);
             initBaseData();
         }
 
-      
+
 
         private void UpdateMemoTitleAndTagMethed(object obj)
         {
-            
+
         }
 
         public async void initBaseData()
         {
             var task = await getTagList(1, 10);
-            if ( task) {
+            if (task)
+            {
                 getMemoList();
             }
         }
@@ -191,7 +192,7 @@ namespace MyMemo.ViewModels
             else if (selectIndex == 2)
             {
                 StartTime = TimeUtil.getSecond(DateTime.Now.Date.AddDays(-1));
-                EndTime = TimeUtil.getSecond(DateTime.Now);
+                EndTime = StartTime - 24 * 3600;
             }
             else
             {
@@ -274,6 +275,9 @@ namespace MyMemo.ViewModels
                     aggregator.SendMessage(apiResponse.msg);
                     resetPage();
                     getMemoList();
+                } else
+                {
+                    aggregator.SendMessage("添加失败");
                 }
             }
             catch (Exception e)
@@ -311,18 +315,38 @@ namespace MyMemo.ViewModels
 
         private void listBoxChange(ListBoxItem obj)
         {
-            TempMemo = obj.DataContext as Memo;
-           
+            Memo temp = obj.DataContext as Memo;
+            int selectIndex = 0;
+            foreach (Memo item in MemoList)
+            {
+                if (item.id == temp.id)
+                {
+                    if (SelecListBoxIndex != selectIndex) { 
+                        TempMemo = temp;
+                    }
+                    SelecListBoxIndex = selectIndex;
+                    break;
+                }
+                selectIndex++;
+            }
         }
 
         private void memoSelect(Memo obj)
         {
-            TempMemo = obj;
-            int selectIndex = 0;
+            if (obj == null)
+            {
+                return;
+            }
+            Memo temp = obj as Memo;
+            int selectIndex = -1;
             foreach (Memo item in MemoList)
             {
-                if (item.id == TempMemo.id)
+                if (item.id == temp.id)
                 {
+                    if (SelecListBoxIndex != selectIndex)
+                    {
+                        TempMemo = temp;
+                    }
                     SelecListBoxIndex = selectIndex;
                     break;
                 }
@@ -377,8 +401,9 @@ namespace MyMemo.ViewModels
         /// <param name="searchWord"></param>
         public async void getMemoList(string searchWord = null)
         {
-            if(WorkspaceLocal == null) {
-                
+            if (WorkspaceLocal == null)
+            {
+
                 return;
             }
             try
@@ -403,10 +428,7 @@ namespace MyMemo.ViewModels
                 {
                     param.Add("endDate", EndTime);
                 }
-                if (SelectTag != -1)
-                {
-                    param.Add("tagId", SelectTag);
-                }
+ 
                 var res = await memoService.MemoList(param);
                 var obj = res.data;
                 if (res.code != 0)
@@ -414,20 +436,20 @@ namespace MyMemo.ViewModels
                     aggregator.SendMessage(res.msg);
                     return;
                 }
-                memoList.Clear();
+                MemoList.Clear();
                 MemosTotal = obj.total;
                 MemoPages = obj.pages;
                 foreach (Memo item in obj.list)
                 {
                     int itemTagIndex = -1;
                     int i = 0;
-                    foreach(Tag itemTag in TagList)
+                    foreach (Tag itemTag in TagList)
                     {
-                        if(item.tagId <= 0)
+                        if (item.tagId <= 0)
                         {
                             break;
                         }
-                        if(item.tagId == itemTag.id)
+                        if (item.tagId == itemTag.id)
                         {
                             itemTagIndex = i;
                             break;
@@ -439,12 +461,19 @@ namespace MyMemo.ViewModels
                 }
                 if (MemoList.Count > 0)
                 {
-                    aggregator.SetMemo(MemoList[SelecListBoxIndex]);
+                    if(SelecListBoxIndex == -1)
+                    {
+                        aggregator.SetMemo(MemoList[0]);
+                    } else
+                    {
+                        aggregator.SetMemo(MemoList[SelecListBoxIndex]);
+                    }
+                    
                 }
             }
             catch (Exception e)
             {
-                aggregator.SendMessage("网络错误");
+                aggregator.SendMessage("网络错误12");
             }
             finally
             {

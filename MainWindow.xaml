@@ -9,6 +9,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
+    xmlns:userRes="clr-namespace:MyTodo.Views.Dialog"
     Title="MainWindow"
     Width="1280"
     Height="800"
@@ -42,9 +43,9 @@
                 <DockPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
                         <DockPanel Grid.Column="0">
                             <Button
@@ -63,7 +64,6 @@
                                 <TextBlock
                                     Width="80"
                                     VerticalAlignment="Center"
-                                    Foreground="Black"
                                     Text="工作空间:" />
                                 <ComboBox
                                     x:Name="tagCombo"
@@ -107,6 +107,9 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <userRes:ResourceDialog />
+                                </StackPanel>
                                 <StackPanel
                                     Grid.Column="1"
                                     HorizontalAlignment="Right"
@@ -118,7 +121,6 @@
                                         <materialDesign:PopupBox.ToggleContent>
 
                                             <Image
-                                                x:Name="userAvatar"
                                                 Width="25"
                                                 Height="25"
                                                 Margin="0,0,30,0"

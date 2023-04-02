@@ -93,6 +93,5 @@ namespace MyMemo.Views
                 webView.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(memo));
             }
         }
-
     }
 }

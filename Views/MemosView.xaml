@@ -11,6 +11,8 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" MinWidth="150" />
@@ -146,7 +148,10 @@
                                             Foreground="{Binding color}"
                                             Kind="Tag" />
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <StackPanel
+                                        x:Name="editItem"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center">
                                         <materialDesign:PopupBox StaysOpen="True">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="PreviewMouseDown">
@@ -173,7 +178,7 @@
                                                         Width="140"
                                                         HorizontalAlignment="Center"
                                                         ItemsSource="{Binding DataContext.TagList, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                                        SelectedIndex="{Binding DataContext.TempMemo.tagIndex, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                                                        SelectedIndex="{Binding DataContext.TempMemo.tagIndex, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
 
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
@@ -190,7 +195,7 @@
                                                     Width="190"
                                                     Margin="5,0"
                                                     materialDesign:HintAssist.Hint="标题"
-                                                    Text="{Binding DataContext.TempMemo.title, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                                                    Text="{Binding DataContext.TempMemo.title, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                                                 <StackPanel
                                                     Grid.Row="2"
                                                     HorizontalAlignment="Left"
@@ -283,8 +288,11 @@
                 </StackPanel>
             </Grid>
         </DockPanel>
+        <wv2:WebView2
+            Name="webView"
+            Grid.Column="1"
+            MinHeight="750" />
 
-        <wv2:WebView2 Name="webView" Grid.Column="1" />
     </Grid>
 
 </UserControl>

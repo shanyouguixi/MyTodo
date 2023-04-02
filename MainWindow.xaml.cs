@@ -3,6 +3,7 @@ using MyMemo.Common.DialogUtils;
 using MyMemo.Common.Extendsions;
 using MyMemo.Common.Model;
 using MyTodo.Common.Model;
+using MyTodo.ViewModels;
 using Prism.Events;
 using Prism.Regions;
 using System;
@@ -55,6 +56,7 @@ namespace MyMemo
         public DispatcherTimer LeftMenuTimer { get => leftMenuTimer; set => leftMenuTimer = value; }
         public bool TimerFlag { get => timerFlag; set => timerFlag = value; }
 
+
         public MainWindow(IEventAggregator aggregator, IDialogHostService dialogHostService, IRegionManager regionManager)
         {
             InitializeComponent();
@@ -64,6 +66,7 @@ namespace MyMemo
             LeftMenuTimer = new DispatcherTimer();
             leftMenuTimer.Interval = TimeSpan.FromMilliseconds(1);
             leftMenuTimer.Tick += timer_Tick;
+
             aggregator.ResgiterMessage(arg =>
             {
                 if("Main".Equals(arg.Filter))

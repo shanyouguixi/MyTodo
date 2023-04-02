@@ -204,7 +204,95 @@ namespace MyMemo.Common.service.request
             }
         }
 
-        public async Task<ApiResponse<T>> UplodFile<T>(BaseRequest baseRequest,string filePath)
+        public async Task<ApiResponse> ExcuteUploadAsync(BaseRequest baseRequest, string[] filePaths)
+        {
+            RestRequest request = new RestRequest();
+            request.AddHeader("Content-type", baseRequest.ContentType);
+            request.Method = baseRequest.Method;
+            if (!string.IsNullOrEmpty(JSESSIONID))
+            {
+                request.AddHeader("Authorization", JSESSIONID);
+            }
+            request.AddHeader("Content-Type", "multipart/form-data");
+            foreach (string filePath in filePaths)
+            {
+                request.AddFile("file", filePath);
+            }
+            if (baseRequest.Parameter != null)
+            {
+                string paramStr = ObjectToGetParam(baseRequest.Parameter);
+                apiUrl += paramStr;
+            }
+            restClient.Options.BaseUrl = new Uri(baseRequest.Url + apiUrl);
+            RestResponse response = await restClient.ExecuteAsync(request);
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
+            {
+                MessageBox.Show("请求失败");
+                return new ApiResponse()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+            ApiResponse apiResponse = null;
+            try
+            {
+                apiResponse = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+
+            }
+            if (apiResponse == null)
+            {
+                return new ApiResponse()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                if (apiResponse.code == 886)
+                {
+                    return new ApiResponse()
+                    {
+                        code = 886,
+                        msg = "请求失败"
+                    };
+                }
+                else if (apiResponse.code == 1000000)
+                {
+                    MessageBox.Show("请登录");
+                    return new ApiResponse()
+                    {
+                        code = 1000000,
+                        msg = "请登录"
+                    };
+                }
+                else
+                {
+                    return apiResponse;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请求失败");
+                return new ApiResponse()
+                {
+                    code = 1,
+                    msg = "请求失败"
+                };
+            }
+        }
+
+
+        public async Task<ApiResponse<T>> UplodFile<T>(BaseRequest baseRequest, string filePath)
         {
             RestRequest request = new RestRequest();
             request.AddHeader("Content-type", baseRequest.ContentType);

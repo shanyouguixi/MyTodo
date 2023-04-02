@@ -12,7 +12,8 @@ namespace MyMemo.Common.service.request
     public class BaseRequest
     {
         public Method Method { get; set; }
-        public string Url { get; set; } = "http://localhost:8099";
+        //public string Url { get; set; } = "http://localhost:8099";
+        public string Url { get; set; } = "http://todo.maojoo.com";
 
         public string ContentType { get; set; } = "application/json";
         public List<string> Headers { get; set; }
