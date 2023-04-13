@@ -15,6 +15,8 @@
             <ColumnDefinition />
             <ColumnDefinition Width="5" />
             <ColumnDefinition />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Margin="10">
             <StackPanel>
@@ -253,6 +255,118 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </StackPanel>
+        <StackPanel Grid.Column="3" Background="#CCC" />
+        <StackPanel
+            Grid.Column="4"
+            Margin="10"
+            VerticalAlignment="Stretch">
+            <StackPanel>
+                <Button
+                    Grid.Row="2"
+                    Width="160"
+                    Margin="0"
+                    Command="{Binding AddEbookTagCommand}"
+                    Content="新增电子书标签" />
+            </StackPanel>
+            <ListBox
+                x:Name="EbookTagList"
+                Margin="0,16,0,16"
+                ItemContainerStyle="{StaticResource MyListBoxItemChildStyle}"
+                ItemsSource="{Binding EbookTagList}"
+                Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="5,0"
+                                    Padding="0,0,100,0"
+                                    Text="{Binding tagName}" />
+                            </StackPanel>
+                            <StackPanel
+                                Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
 
+                                <materialDesign:PopupBox StaysOpen="True">
+
+                                    <materialDesign:PopupBox.ToggleContent>
+                                        <materialDesign:PackIcon
+                                            Width="25"
+                                            Height="25"
+                                            Kind="NotebookEdit">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="PreviewMouseDown">
+                                                    <i:InvokeCommandAction Command="{Binding Path=DataContext.EbookTagSelectCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </materialDesign:PackIcon>
+
+                                    </materialDesign:PopupBox.ToggleContent>
+                                    <Grid Width="200" Height="130">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <TextBox
+                                            Grid.Row="0"
+                                            Width="190"
+                                            Margin="5,0"
+                                            materialDesign:HintAssist.Hint="名称"
+                                            Text="{Binding DataContext.TempEbookTag.tagName, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                                        <StackPanel
+                                            Grid.Row="3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal">
+                                            <Button Margin="15,1" Content="Save">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <i:InvokeCommandAction Command="{Binding DataContext.UpdateEbookTag, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                            <Button
+                                                Margin="15,1"
+                                                Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}"
+                                                Content="Cancel" />
+                                        </StackPanel>
+                                    </Grid>
+                                </materialDesign:PopupBox>
+                            </StackPanel>
+                            <Button
+                                Grid.Column="2"
+                                Padding="1"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=DataContext.EbookDelTagCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                Cursor=""
+                                FontWeight="Bold"
+                                Foreground="Black"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                                <Button.Content>
+                                    <materialDesign:PackIcon
+                                        Width="25"
+                                        Height="25"
+                                        VerticalAlignment="Center"
+                                        Kind="DeleteForever" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -303,6 +303,7 @@ namespace MyMemo.Common.service.request
             }
             request.AddHeader("Content-Type", "multipart/form-data");
             request.AddFile("file", filePath);
+            //request.Timeout = 300;
             if (baseRequest.Parameter != null)
             {
                 request.AddBody(baseRequest.Parameter);

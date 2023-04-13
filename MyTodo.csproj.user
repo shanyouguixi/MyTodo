@@ -18,7 +18,13 @@
     <Compile Update="Views\Dialog\MsgView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Dialog\PdfViewer.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Dialog\ResourceDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\EbookView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\IndexView.xaml.cs">
@@ -56,7 +62,13 @@
     <Page Update="Views\Dialog\MsgView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Dialog\PdfViewer.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Dialog\ResourceDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\EbookView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\IndexView.xaml">

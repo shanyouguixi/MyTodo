@@ -4,6 +4,8 @@ using MyMemo.Common.Extendsions;
 using MyMemo.Common.Model;
 using MyMemo.Common.service;
 using MyMemo.Common.service.request;
+using MyTodo.Common.Model;
+using MyTodo.Common.service;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Ioc;
@@ -39,6 +41,14 @@ namespace MyMemo.ViewModels
         private DelegateCommand<ListBoxItem> delWorkspaceCommand;
         private Workspace tempWorkspace;
 
+        private EbookService ebookService;
+        private ObservableCollection<EbookTag> ebookTagList;
+        private DelegateCommand<ListBoxItem> ebookTagSelectCommand;
+        private DelegateCommand updateEbookTag;
+        private DelegateCommand addEbookTagCommand;
+        private DelegateCommand<ListBoxItem> ebookDelTagCommand;
+        private EbookTag tempEbookTag;
+
 
 
         private int tagNum = 1;
@@ -72,6 +82,13 @@ namespace MyMemo.ViewModels
         public DelegateCommand<ListBoxItem> DelWorkspaceCommand { get => delWorkspaceCommand; set => delWorkspaceCommand = value; }
         public Workspace TempWorkspace { get => tempWorkspace; set { tempWorkspace = value; RaisePropertyChanged(); } }
 
+        public ObservableCollection<EbookTag> EbookTagList { get => ebookTagList; set => ebookTagList = value; }
+        public DelegateCommand<ListBoxItem> EbookTagSelectCommand { get => ebookTagSelectCommand; set => ebookTagSelectCommand = value; }
+        public DelegateCommand UpdateEbookTag { get => updateEbookTag; set => updateEbookTag = value; }
+        public DelegateCommand AddEbookTagCommand { get => addEbookTagCommand; set => addEbookTagCommand = value; }
+        public DelegateCommand<ListBoxItem> EbookDelTagCommand { get => ebookDelTagCommand; set => ebookDelTagCommand = value; }
+        public EbookTag TempEbookTag { get => tempEbookTag; set { tempEbookTag = value; RaisePropertyChanged(); } }
+
         public SettingViewModel(IEventAggregator aggregator, IContainerProvider provider) : base(provider) {
             this.aggregator = aggregator;
             dialogHost = provider.Resolve<IDialogHostService>();
@@ -88,6 +105,13 @@ namespace MyMemo.ViewModels
             DelWorkspaceCommand = new DelegateCommand<ListBoxItem>(DelWorkspace);
             UpdateWorkspace = new DelegateCommand(UpdateWorkspaceMoel);
             AddWorkspaceCommand = new DelegateCommand(AddWorkspaceModel);
+
+            ebookService = new EbookService();
+            EbookTagList = new ObservableCollection<EbookTag>();
+            EbookTagSelectCommand = new DelegateCommand<ListBoxItem>(EbookTagSelect);
+            EbookDelTagCommand = new DelegateCommand<ListBoxItem>(EbookDelWorkspace);
+            UpdateEbookTag = new DelegateCommand(updateEbookTagInfo);
+            AddEbookTagCommand = new DelegateCommand(addEbookInfoInfo);
             initBaseData();
         }
 
@@ -95,6 +119,7 @@ namespace MyMemo.ViewModels
         {
             var task = await getTagList();
             GetWorkSpaceList();
+            GetEbookTagList();
 
 
         }
@@ -115,7 +140,10 @@ namespace MyMemo.ViewModels
             TempWorkspace = obj.DataContext as Workspace;
         }
 
-        
+        private void EbookTagSelect(ListBoxItem obj)
+        {
+            TempEbookTag = obj.DataContext as EbookTag;
+        }
 
 
 
@@ -343,6 +371,112 @@ namespace MyMemo.ViewModels
                     aggregator.SendMessage("删除成功");
                     GetWorkSpaceList();
                     aggregator.SetFlash("Workspace");
+                }
+                else
+                {
+                    aggregator.SendMessage("删除失败");
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("删除失败");
+            }
+            finally
+            {
+
+            }
+        }
+
+
+
+        public async void GetEbookTagList()
+        {
+            try
+            {
+   
+                var res = await ebookService.GetEbookTag(null);
+                if (res.code != 0)
+                {
+                    aggregator.SendMessage("网络错误");
+                    return;
+                }
+                EbookTagList.Clear();
+                var obj = res.data;
+                foreach (EbookTag item in obj.list)
+                {
+                    EbookTagList.Add(item);
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
+            }
+            finally
+            {
+
+            }
+        }
+
+        private async void updateEbookTagInfo()
+        {
+            try
+            {
+
+                JsonObject param = new JsonObject();
+                param.Add("id", TempEbookTag.id);
+                param.Add("tagName", TempEbookTag.tagName);
+                ApiResponse apiResponse = await ebookService.UpdateEbookTag(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage(apiResponse.msg);
+                    GetEbookTagList();
+                    aggregator.SetFlash("EbookTag");
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
+            }
+
+        }
+
+        private async void addEbookInfoInfo()
+        {
+            try
+            {
+                JsonObject param = new JsonObject();
+                param.Add("tagName", "新工分类");
+                ApiResponse apiResponse = await ebookService.SaveEbookTag(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage(apiResponse.msg);
+                    GetEbookTagList();
+                    aggregator.SetFlash("EbookTag");
+                }
+            }
+            catch (Exception e)
+            {
+                aggregator.SendMessage("网络错误");
+            }
+
+        }
+
+        private async void EbookDelWorkspace(ListBoxItem obj)
+        {
+
+            try
+            {
+                EbookTag ebookTag = obj.DataContext as EbookTag;
+                var dialogResult = await dialogHost.Question("温馨提示", $"确认删除:{ebookTag.tagName} ? 该工作分类下的数据都将会被删除！");
+                if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;
+                JsonObject param = new JsonObject();
+                param.Add("id", ebookTag.id);
+                ApiResponse apiResponse = await ebookService.DelEbookTag(param);
+                if (apiResponse.code == 0)
+                {
+                    aggregator.SendMessage("删除成功");
+                    GetEbookTagList();
+                    aggregator.SetFlash("EbookTag");
                 }
                 else
                 {

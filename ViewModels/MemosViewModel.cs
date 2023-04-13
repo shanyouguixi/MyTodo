@@ -473,7 +473,7 @@ namespace MyMemo.ViewModels
             }
             catch (Exception e)
             {
-                aggregator.SendMessage("网络错误12");
+                aggregator.SendMessage("网络错误");
             }
             finally
             {

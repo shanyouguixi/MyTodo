@@ -50,7 +50,7 @@ namespace MyMemo.ViewModels
             MenuBars.Add(new MenuBar() { Icon = "Home", Title = "首页", NameSpace = "IndexView" });
             MenuBars.Add(new MenuBar() { Icon = "AlarmMultiple", Title = "便签", NameSpace = "TodoView" });
             MenuBars.Add(new MenuBar() { Icon = "NotebookPlus", Title = "备忘录", NameSpace = "MemosView" });
-            //MenuBars.Add(new MenuBar() { Icon = "Clock", Title = "标签", NameSpace = "AlarmClockView" });
+            MenuBars.Add(new MenuBar() { Icon = "BookOpenVariant", Title = "电子书", NameSpace = "EbookView" });
             MenuBars.Add(new MenuBar() { Icon = "Cog", Title = "设置", NameSpace = "SettingView" });
         }
     }

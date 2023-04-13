@@ -64,6 +64,7 @@
                                 <TextBlock
                                     Width="80"
                                     VerticalAlignment="Center"
+                                    Foreground="Black"
                                     Text="工作空间:" />
                                 <ComboBox
                                     x:Name="tagCombo"
